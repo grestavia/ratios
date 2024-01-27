@@ -15,12 +15,17 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      colors: {
+        green: "#07A081"
+      }
     },
   },
   darkMode: "class",
   plugins: [
     require('tailwind-scrollbar'),
-    nextui()
+    nextui({
+      addCommonColors: true,
+    })
   ],
 };
 export default config;

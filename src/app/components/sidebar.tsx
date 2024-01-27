@@ -1,36 +1,44 @@
 'use client'
+import { useEffect } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link'
 
 export default function Sidebar() {
 
   const router = usePathname();
-  const params = useParams()
+  const params = useParams();
+  const links = [
+    {
+      route: params.postId ? `/post/${params.postId}` : "/",
+      name: "Beranda"
+    },
+    {
+      route: "/upload",
+      name: "Unggah"
+    },
+    {
+      route: "/wallet",
+      name: "Dompet"
+    },
+    {
+      route: "/profile/1",
+      name: "Profil"
+    }
+  ]
 
   return (
     <>
-    <div className="mx-auto w-full hidden lg:flex flex-col justify-between pt-8 max-w-xs">
-      <ul className="flex flex-col gap-10 items-center">
-        <Link href={"/"}>
-          <li className={router === "/" ? "bg-[#07A081] text-white rounded-lg" : ""}>
-            <p className='px-6 py-3 text-lg'>Beranda</p>
+    <div className="mx-auto w-full hidden md:flex flex-col justify-between pt-8 md:max-w-[15rem] lg:max-w-[15rem]">
+      <ul className="flex flex-col gap-10 items-center w-full px-6">
+        {links.map((link, index) => {
+          return (        
+        <Link key={index} href={link.route} className='w-full'>
+          <li className={router === link.route ? "bg-[#07A081] text-white rounded-lg w-full" : ""}>
+            <p className='px-5 py-3 '>{link.name}</p>
           </li>
         </Link>
-        <Link href={"/upload"}>
-          <li className={router === "/upload" ? "bg-[#07A081] text-white rounded-lg" : ""}>
-            <p className='px-6 py-3 text-lg'>Unggah</p>
-          </li>
-        </Link>
-        <Link href={"/"}>
-          <li>
-            <p className='px-6 py-3 text-lg'>Dompet</p>
-          </li>
-        </Link>
-        <Link href={"/profile"}>
-          <li className={router === "/profile" ? "bg-[#07A081] text-white rounded-lg" : ""}>
-            <p className='px-6 py-3 text-lg'>Profil</p>
-          </li>
-        </Link>
+          )
+        })}
       </ul>
       <p className='mb-10 hidden lg:block text-center'>Copyright 2023 <br></br> Ratios App</p>
     </div>
