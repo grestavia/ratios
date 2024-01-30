@@ -1,6 +1,6 @@
 "use client";
-import Header from "@/app/components/header";
-import Sidebar from "@/app/components/sidebar";
+import Header from "../../components/header";
+import Sidebar from "../../components/sidebar";
 import {
   Tabs,
   Tab,
@@ -92,7 +92,7 @@ export default function Profile() {
                 </Tab>
                 <Tab key="album" title="Album">
                   <div className=" border-2 border-green w-full lg:columns-4 md:columns-3 columns-1 gap-3">
-                    <Link>
+                    <Link href={'/'}>
                       <Card shadow="none">
                         <CardBody className="grid md:grid-cols-2 gap-2">
                           <Image

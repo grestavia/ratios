@@ -1,6 +1,6 @@
 "use client";
-import Header from "@/app/components/header";
-import Sidebar from "@/app/components/sidebar";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
 import { ReactNode } from "react";
 import {
   Modal,

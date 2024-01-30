@@ -1,5 +1,5 @@
 "use client";
-import Header from "@/app/components/header";
+import Header from "../../components/header";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
@@ -11,49 +11,89 @@ import {
   MdAlternateEmail,
   MdOutlineLocationOn,
 } from "react-icons/md";
-import { useState } from "react";
-import { FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
+import Alert from "@mui/material/Alert";
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
+  const [isVisiblePassword, setIsVisiblePassword] = useState(false);
+  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] =
+    useState(false);
+
+  const router = useRouter();
   
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      router.push('/');
+    }
+  }, []);
+
+  const toggleVisibilityPassword = () =>
+    setIsVisiblePassword(!isVisiblePassword);
+  const toggleVisibilityConfirmPassword = () =>
+    setIsVisibleConfirmPassword(!isVisibleConfirmPassword);
+
   const [formData, setFormData] = useState({
-    username: "",
     fullname: "",
-    password: "",
+    username: "",
     email: "",
     address: "",
+    password: "",
     confirmPassword: "",
   });
 
-  const [isVisiblePassword, setIsVisiblePassword] = useState(false);
-  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const toggleVisibilityPassword = () => setIsVisiblePassword(!isVisiblePassword);
-  const toggleVisibilityConfirmPassword = () => setIsVisibleConfirmPassword(!isVisibleConfirmPassword);
+  const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    const response = await fetch("https://9pfb2vv1-5000.asse.devtunnels.ms/users/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-    const formData = new FormData(event.currentTarget)
-    try {
-      const response = await fetch("http://localhost:5000/users/auth/register", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Registration successful:", data);
-    } catch (error) {
-      console.error("Registration failed:", error);
+    const data = await response.json();
+    console.log(data);
+    if (data.status === 400) {
+      setErrorAlert(true);
+      setErrorMessage(
+        "Error Terjadi: " + data.errors.messages
+        .map((item: { message: string }) => item.message)
+        .join(" dan ")
+      );
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 3000);
+    } else if (response.ok) {
+      router.push('/login')
     }
-  }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   return (
     <>
+      {errorAlert && (
+        <Alert
+          variant="filled"
+          className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+          severity="error"
+        >
+          {errorMessage}
+        </Alert>
+      )}
       <Header />
       <div className="flex justify-between pt-20 px-5 lg:px-10">
         <div className="konten block md:flex overflow-scroll md:overflow-hidden flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
@@ -65,12 +105,13 @@ export default function Register() {
             </p>
             <form
               action=""
-              onSubmit={onSubmit}
+              onSubmit={submitFormData}
               className="flex flex-col pt-5"
             >
               <div className="flex flex-col md:flex-row gap-2">
                 <Input
                   isRequired
+                  onChange={handleInputChange}
                   startContent={
                     <MdOutlineAccountCircle className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                   }
@@ -81,6 +122,7 @@ export default function Register() {
                 />
                 <Input
                   isRequired
+                  onChange={handleInputChange}
                   startContent={
                     <MdAlternateEmail className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                   }
@@ -92,6 +134,7 @@ export default function Register() {
               </div>
               <Input
                 isRequired
+                onChange={handleInputChange}
                 startContent={
                   <MdOutlineMailOutline className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
@@ -102,6 +145,7 @@ export default function Register() {
               />
               <Input
                 isRequired
+                onChange={handleInputChange}
                 startContent={
                   <MdOutlineLocationOn className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
@@ -118,6 +162,7 @@ export default function Register() {
                   label="Password"
                   name="password"
                   isRequired
+                  onChange={handleInputChange}
                   variant="bordered"
                   endContent={
                     <button
@@ -144,6 +189,7 @@ export default function Register() {
                   }
                   label="Konfirmasi Password"
                   isRequired
+                  onChange={handleInputChange}
                   name="confirmPassword"
                   variant="bordered"
                   endContent={
@@ -175,7 +221,9 @@ export default function Register() {
               <button
                 type="submit"
                 className="p-2 rounded-md bg-[#07A081] text-white cursor-pointer"
-              >Daftar</button>
+              >
+                Daftar
+              </button>
             </form>
           </div>
         </div>

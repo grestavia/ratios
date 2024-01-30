@@ -1,21 +1,77 @@
 "use client";
-import Header from "@/app/components/header";
+import Header from "../../components/header";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
   MdOutlineRemoveRedEye,
   MdRemoveRedEye,
   MdOutlineMailOutline,
-  MdOutlineKey
+  MdOutlineKey,
 } from "react-icons/md";
+import { useState, FormEvent, useEffect } from "react";
+import Alert from "@mui/material/Alert";
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
+  
   const [isVisible, setIsVisible] = React.useState(false);
-
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const response = await fetch("https://localhost:5000/users/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+    console.log(data);
+    if (data.status === 400) {
+      setErrorAlert(true);
+      setErrorMessage(
+        "Error Terjadi: " +
+          data.errors.messages
+            .map((item: { message: string }) => item.message)
+            .join(" dan ")
+      );
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 3000);
+    } else if (response.ok) {
+      localStorage.setItem("token",data.data.token)
+      router.push('/[locale]/')
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   return (
     <>
+      {errorAlert && (
+        <Alert
+          variant="filled"
+          className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+          severity="error"
+        >
+          {errorMessage}
+        </Alert>
+      )}
       <Header />
       <div className="flex justify-between pt-20 px-5 lg:px-10">
         <div className="konten flex flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
@@ -25,13 +81,19 @@ export default function Login() {
             <p className="text-center">
               Silahkan login untuk melanjutkan ke halaman utama
             </p>
-            <form action="" className="flex flex-col pt-5">
+            <form
+              action=""
+              className="flex flex-col pt-5"
+              onSubmit={submitFormData}
+            >
               <Input
                 isRequired
+                onChange={handleInputChange}
                 startContent={
                   <MdOutlineMailOutline className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
                 type="email"
+                name="email"
                 label="Email"
                 className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
               />
@@ -41,7 +103,9 @@ export default function Login() {
                 }
                 label="Password"
                 isRequired
+                onChange={handleInputChange}
                 variant="bordered"
+                name="password"
                 endContent={
                   <button
                     className="focus:outline-none"
@@ -67,12 +131,18 @@ export default function Login() {
                   Daftar
                 </a>
               </p>
-              <a href="/forgot-password" className="text-[#07A081] mb-3 text-md">Lupa Sandi?</a>
-              <input
+              <a
+                href="/forgot-password"
+                className="text-[#07A081] mb-3 text-md"
+              >
+                Lupa Sandi?
+              </a>
+              <button
                 type="submit"
-                value="Login"
                 className="p-2 rounded-md bg-[#07A081] text-white cursor-pointer"
-              />
+              >
+                Login
+              </button>
             </form>
           </div>
         </div>

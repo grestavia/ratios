@@ -9,19 +9,19 @@ export default function Sidebar() {
   const params = useParams();
   const links = [
     {
-      route: params.postId ? `/post/${params.postId}` : "/",
+      route: params.postId ? `/post/${params.postId}` : "/id",
       name: "Beranda"
     },
     {
-      route: "/upload",
+      route: "/id/upload" || "/en/upload",
       name: "Unggah"
     },
     {
-      route: "/wallet",
+      route: "/id/wallet" || "/en/wallet",
       name: "Dompet"
     },
     {
-      route: "/profile/1",
+      route: "/id/profile/1" || "/en/profile/1",
       name: "Profil"
     }
   ]
