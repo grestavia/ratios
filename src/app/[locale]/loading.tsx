@@ -1,5 +1,5 @@
-import Header from "./components/header"
-import Sidebar from "./components/sidebar"
+import Header from "../../../components/header"
+import Sidebar from "../../../components/sidebar"
 import { CircularProgress } from "@nextui-org/react"
 
 export default function Loading() {

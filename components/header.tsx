@@ -1,6 +1,7 @@
 'use client'
 import MenuIcon from '@mui/icons-material/Menu';
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
+import Image from 'next/image';
 import { useEffect } from 'react';
 
 export default function Header() {
@@ -17,14 +18,14 @@ export default function Header() {
                 <MenuIcon />
             </div>
             <a href="/" className='flex items-center'>
-              <img src="/logo.png" className='profil h-[40px] ml-1 md:ml-3' alt="" />
+              <Image src="/Logo.png" width={40} height={40} className='profil h-[40px] ml-1 md:ml-3' alt="" />
               <h1 className='text-xl font-semibold ml-3 text-[#393939]'>Ratios App</h1>
             </a>
         </div>
         <div className='p-[12px] mr-5 md:mr-10'>
         <Dropdown>
             <DropdownTrigger>
-              <img src="/Logo.png" className='max-h-[40px] max-w-[40px] cursor-pointer' alt="" />
+              <Image src="/Logo.png" width={40} height={40} className='max-h-[40px] max-w-[40px] cursor-pointer' alt="logo" />
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
               <DropdownItem href='/profile/1'>Akun Anda</DropdownItem>

@@ -1,10 +1,9 @@
 'use client'
 import { useEffect } from "react";
-import Header from "./components/header";
-import Sidebar from "./components/sidebar";
+import Header from "../../../components/header";
+import Sidebar from "../../../components/sidebar";
 import Link from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
-import { getTranslations } from "next-intl/server";
 import { useRouter } from "next/router";
 import { Router } from "next/router";
 import axios from "axios";
