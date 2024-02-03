@@ -13,11 +13,34 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { MdFavoriteBorder, MdLibraryAdd  } from "react-icons/md";
+import { useEffect } from "react";
+import axios from "axios";
 
-export default function DetailPost() {
+export default function DetailPost({ params }: { params: { postId: string } }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [inputValue, setInputValue] = useState(0);
   const [isInvalidInput, setIsInvalidInput] = useState(false);
+  const [post, setPost] = useState<{ data?: any } | null>(null);;
+  
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/photos/${params.postId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        setPost(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    };
+
+    fetchPost();
+  }, [params]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -44,15 +67,14 @@ export default function DetailPost() {
   };
   return (
     <>
-      <Header />
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
-        <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-2 md:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+        <div className="overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-2 md:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex flex-col lg:flex-row">
-            <div className="w-max-md">
+            <div className="w-full">
               <img
-                className="rounded-lg"
-                src="https://source.unsplash.com/OyCl7Y4y0Bk"
+                className="rounded-lg shadow-md w-full border-1"
+                src={ post?.data.locationFile && `http://localhost:5000/files/images/photos/${post.data.locationFile}` }
                 alt=""
               />
               <div className="flex">
@@ -61,22 +83,24 @@ export default function DetailPost() {
               </div>
             </div>
             <div className="w-full p-3 md:p-5 flex flex-col">
-              <h1 className="text-xl md:text-3xl font-semibold">Rumah</h1>
-              <p className="md:text-md text-sm">lorem ipsum dolor sit amet</p>
+              <h1 className="text-xl md:text-3xl font-semibold">{ post?.data.title }</h1>
+              <p className="md:text-md text-sm">{ post?.data.description }</p>
+              <Link href={`/profile/${post?.data.user.username}`}>
               <User
                 className="md:mt-5 mt-3 justify-start"
-                name="Username"
+                name={post?.data.user.fullName}
                 description={
-                  <Link
-                    href="/profile/1"
-                  >
-                    @jrgarciadev
-                  </Link>
+                  <p>
+                    @{post?.data.user.username}
+                  </p>
                 }
-                avatarProps={{
-                  src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-                }}
+                avatarProps={
+                  {
+                    src: post?.data.user.photoUrl && `http://localhost:5000/files/images/profiles/${post.data.user.photoUrl}`
+                  }
+                }
               />
+              </Link>
               <button
                 onClick={onOpen}
                 className="w-full mt-5 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
@@ -136,7 +160,6 @@ export default function DetailPost() {
                 </ModalContent>
               </Modal>
               <div className="comment mt-5 overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-[#F0F4F9] h-[250px] rounded-lg">
-
               </div>
             </div>
           </div>

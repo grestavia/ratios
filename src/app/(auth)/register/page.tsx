@@ -1,5 +1,5 @@
 "use client";
-import Header from "../../../../../components/header";
+import Header from "@/app/components/header";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
@@ -13,7 +13,7 @@ import {
 } from "react-icons/md";
 import { useState, FormEvent, useEffect } from "react";
 import Alert from "@mui/material/Alert";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function Register() {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
@@ -21,12 +21,12 @@ export default function Register() {
     useState(false);
 
   const router = useRouter();
-  
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     if (token) {
-      router.push('/');
+      router.push("/");
     }
   }, []);
 
@@ -50,7 +50,7 @@ export default function Register() {
   const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const response = await fetch("https://9pfb2vv1-5000.asse.devtunnels.ms/users/auth/register", {
+    const response = await fetch("http://localhost:5000/users/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,15 +63,16 @@ export default function Register() {
     if (data.status === 400) {
       setErrorAlert(true);
       setErrorMessage(
-        "Error Terjadi: " + data.errors.messages
-        .map((item: { message: string }) => item.message)
-        .join(" dan ")
+        "Error Terjadi: " +
+          data.errors.messages
+            .map((item: { message: string }) => item.message)
+            .join(" dan ")
       );
       setTimeout(() => {
         setErrorAlert(false);
       }, 3000);
     } else if (response.ok) {
-      router.push('/login')
+      router.push("/login");
     }
   };
 
@@ -94,7 +95,6 @@ export default function Register() {
           {errorMessage}
         </Alert>
       )}
-      <Header />
       <div className="flex justify-between pt-20 px-5 lg:px-10">
         <div className="konten block md:flex overflow-scroll md:overflow-hidden flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex mx-auto flex-col justify-center p-5 rounded-lg align-middle my-auto border-1 w-full max-w-lg">

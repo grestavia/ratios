@@ -1,5 +1,5 @@
 "use client";
-import Header from "../../../../../components/header";
+import Header from "@/app/components/header";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
@@ -26,7 +26,7 @@ export default function Login() {
   const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const response = await fetch("https://localhost:5000/users/auth/login", {
+    const response = await fetch("http://localhost:5000/users/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export default function Login() {
       }, 3000);
     } else if (response.ok) {
       localStorage.setItem("token",data.data.token)
-      router.push('/[locale]/')
+      router.push('/')
     }
   };
 
@@ -72,7 +72,6 @@ export default function Login() {
           {errorMessage}
         </Alert>
       )}
-      <Header />
       <div className="flex justify-between pt-20 px-5 lg:px-10">
         <div className="konten flex flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex mx-auto flex-col justify-center p-5 rounded-lg align-middle my-auto border-1 w-full max-w-md">

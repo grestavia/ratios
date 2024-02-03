@@ -1,6 +1,6 @@
 "use client";
-import Header from "../../../../components/header";
-import Sidebar from "../../../../components/sidebar";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
 import { ReactNode } from "react";
 import {
   Modal,
@@ -50,7 +50,6 @@ export default function Wallet() {
 
   return (
     <>
-      <Header />
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">

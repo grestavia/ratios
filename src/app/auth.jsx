@@ -9,16 +9,16 @@ export default function Auth({ children }) {
 
       if(token){
         if(pathname === '/register'){
-           return router.push('/[locale]/');
+           return router.push('/');
         }
 
         if(pathname === '/login'){
-           return router.push('/[locale]/');
+           return router.push('/');
         }
       }
 
       if(!token && pathname !== '/register'){
-           return router.push('/[locale]/login');
+           return router.push('/login');
     }
 
     }, [])

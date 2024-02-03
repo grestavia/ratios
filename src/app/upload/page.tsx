@@ -1,6 +1,5 @@
 "use client";
-import Header from "../../../../components/header";
-import Sidebar from "../../../../components/sidebar";
+import Sidebar from "../components/sidebar";
 import {
   MdOutlineUploadFile,
   MdOutlineImage,
@@ -8,6 +7,7 @@ import {
 } from "react-icons/md";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import Alert from "@mui/material/Alert";
 
 export default function Upload() {
   const [image, setImage] = useState<string | null>(null);
@@ -15,6 +15,7 @@ export default function Upload() {
   const [fileName, setFileName] = useState("No Selected File");
   const [description, setDescription] = useState<string>('');
   const [photo, setPhoto] = useState<File | null>(null);
+  const [sucessAlert, setSucessAlert] = useState(false);
 
   const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -28,7 +29,6 @@ export default function Upload() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-    
 
     if (!photo) {
       console.error("Please select a photo.");
@@ -41,23 +41,34 @@ export default function Upload() {
       description: description
     }
 
-
     try {
-      const response = await axios.post("https://9pfb2vv1-5000.asse.devtunnels.ms/photos", payload, {
+      const response = await axios.post("http://localhost:5000/photos", payload, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${token}`
         },
       });
       console.log("Photo uploaded successfully:", response.data);
+      setSucessAlert(true);
+      setTimeout(() => {
+        setSucessAlert(false);
+      }, 3000);
+      window.location.reload();
     } catch (error) {
       console.error("Error uploading photo:", error);
     }
   };
 
   return (
-    <>
-      <Header />
+    <>{sucessAlert && (
+      <Alert
+        variant="filled"
+        className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+        severity="success"
+      >
+        Gambar Berhasil di Post
+      </Alert>
+    )}
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-2 lg:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
