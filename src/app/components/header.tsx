@@ -71,7 +71,7 @@ export default function Header() {
             )}
           </DropdownTrigger>
           <DropdownMenu aria-label="Static Actions">
-            <DropdownItem href={`/profile/${userdata?.username}`}>
+            <DropdownItem href={`/profile`}>
               Akun Anda
             </DropdownItem>
             <DropdownItem onClick={logout} className="text-red-500">

@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
-import { Tabs, Tab, Card, CardBody, Image } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -32,12 +32,22 @@ export default function Profile() {
         },
       });
       const dataPhoto = response2.data.data;
-      console.log(dataPhoto);
       setImageData(dataPhoto);
     };
 
+    const fetchData3 = async () => {
+      const response3 = await axios.get(`http://localhost:5000/albums`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      const dataAlbum = response3.data.data;
+      console.log(dataAlbum);
+    }
+
     fetchData1();
     fetchData2();
+    fetchData3();
   }, []);
 
   const variant = "underlined";
@@ -63,8 +73,7 @@ export default function Profile() {
               </div>
               <section>
                 <Link
-                  href={"/profile/[userSlug]/edit"}
-                  as={`/profile/${userdata?.username}/edit`}
+                  href="/profile/edit"
                 >
                   <button className="bg-[#07A081] text-white p-2 rounded-lg">
                     Edit Profile
@@ -97,26 +106,17 @@ export default function Profile() {
                 <Tab key="album" title="Album">
                   <div className=" border-2 border-green w-full lg:columns-4 md:columns-3 columns-1 gap-3">
                     <Link href={"/"}>
-                      <Card shadow="none">
-                        <CardBody className="grid md:grid-cols-2 gap-2">
-                          <Image
-                            src="https://source.unsplash.com/W3FC_bCPw8E"
-                            className="aspect-square"
-                          />
-                          <Image
-                            src="https://source.unsplash.com/W3FC_bCPw8E"
-                            className="aspect-square md:block hidden"
-                          />
-                          <Image
-                            src="https://source.unsplash.com/W3FC_bCPw8E"
-                            className="aspect-square md:block hidden"
-                          />
-                          <Image
-                            src="https://source.unsplash.com/W3FC_bCPw8E"
-                            className="aspect-square md:block hidden"
-                          />
-                        </CardBody>
-                      </Card>
+                      <div className="relative">
+                        <Image
+                          src="https://source.unsplash.com/W3FC_bCPw8E"
+                          className="aspect-square absolute inset-0"
+                        />
+                        <Image
+                          src="https://source.unsplash.com/W3FC_bCPw8E"
+                          className="aspect-square absolute inset-0"
+                        />
+                      </div>
+                      Judul
                     </Link>
                   </div>
                 </Tab>

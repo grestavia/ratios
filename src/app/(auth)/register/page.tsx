@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/app/components/header";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
