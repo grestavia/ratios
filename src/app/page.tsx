@@ -34,7 +34,7 @@ export default function Home() {
               { imagespath.map((image, index) => {
                 return (
                   <Link href={`/post/${image.id}`} key={index}>
-                    <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
+                    <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
                       <img
                         src={`http://localhost:5000/files/images/photos/${image.locationFile}`}
                         className="rounded-md mb-2"

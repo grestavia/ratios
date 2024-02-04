@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
 import { User } from "@nextui-org/react";
 import {
@@ -12,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useState } from "react";
-import { MdFavoriteBorder, MdLibraryAdd  } from "react-icons/md";
+import { MdFavoriteBorder, MdLibraryAdd } from "react-icons/md";
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -20,8 +19,9 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [inputValue, setInputValue] = useState(0);
   const [isInvalidInput, setIsInvalidInput] = useState(false);
-  const [post, setPost] = useState<{ data?: any } | null>(null);;
-  
+  const [post, setPost] = useState<{ data?: any } | null>(null);
+  const [likesCount, setLikesCount] = useState<number>(0);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -34,6 +34,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
         });
         setPost(response.data);
         console.log(response.data);
+        setLikesCount(response.data.data.likes.length);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
@@ -73,37 +74,37 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
           <div className="flex flex-col lg:flex-row">
             <div className="w-full">
               <img
-                className="rounded-lg shadow-md w-full border-1"
-                src={ post?.data.locationFile && `http://localhost:5000/files/images/photos/${post.data.locationFile}` }
+                className="rounded-lg w-full"
+                src={post?.data.locationFile && `http://localhost:5000/files/images/photos/${post.data.locationFile}`}
                 alt=""
               />
-              <div className="flex">
-                <MdFavoriteBorder className="size-7" />
-                <MdLibraryAdd className="size-7" />
-              </div>
             </div>
             <div className="w-full p-3 md:p-5 flex flex-col">
-              <h1 className="text-xl md:text-3xl font-semibold">{ post?.data.title }</h1>
-              <p className="md:text-md text-sm">{ post?.data.description }</p>
+              <h1 className="text-xl md:text-3xl font-semibold">{post?.data.title}</h1>
+              <p className="md:text-md text-sm">{post?.data.description}</p>
               <Link href={`/profile/${post?.data.user.username}`}>
-              <User
-                className="md:mt-5 mt-3 justify-start"
-                name={post?.data.user.fullName}
-                description={
-                  <p>
-                    @{post?.data.user.username}
-                  </p>
-                }
-                avatarProps={
-                  {
-                    src: post?.data.user.photoUrl && `http://localhost:5000/files/images/profiles/${post.data.user.photoUrl}`
+                <User
+                  className="md:mt-5 mt-3 justify-start"
+                  name={post?.data.user.fullName}
+                  description={
+                    <p>
+                      @{post?.data.user.username}
+                    </p>
                   }
-                }
-              />
+                  avatarProps={
+                    {
+                      src: post?.data.user.photoUrl && `http://localhost:5000/files/images/profiles/${post.data.user.photoUrl}`
+                    }
+                  }
+                />
               </Link>
+              <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
+                <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
+                <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
+              </div>
               <button
                 onClick={onOpen}
-                className="w-full mt-5 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
+                className="w-full transition-all duration-300 ease-in-out mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
               >
                 Kirim Donasi
               </button>
@@ -127,9 +128,8 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                           type="number"
                           name=""
                           placeholder="Rp. 5.000"
-                          className={`w-full border-${
-                            isInvalidInput ? "red" : "#07A081"
-                          } rounded-md border-2 p-2`}
+                          className={`w-full border-${isInvalidInput ? "red" : "#07A081"
+                            } rounded-md border-2 p-2`}
                           id=""
                           onChange={handleInputChange}
                         />

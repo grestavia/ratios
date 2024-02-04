@@ -23,6 +23,8 @@ export default function Profile() {
         const userId = dataUser.map((user) => user.id);
 
         setUserData(dataUser[0]);
+        console.log(dataUser[0]);
+        
       }
     };
     const fetchData2 = async () => {
@@ -33,6 +35,7 @@ export default function Profile() {
       });
       const dataPhoto = response2.data.data;
       setImageData(dataPhoto);
+      
     };
 
     const fetchData3 = async () => {
