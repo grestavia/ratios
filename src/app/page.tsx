@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState } from "react";
-import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import Link from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
@@ -13,7 +12,7 @@ export default function Home() {
 
   useEffect(()=> {
     const fetchImage = async () => {
-      const response = await axios.get("http://localhost:5000/photos");
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos");
       const imageData = response.data.data;
       if (Array.isArray(imageData)) {
         const imageIds = imageData.map(image => image.id);
@@ -36,7 +35,7 @@ export default function Home() {
                   <Link href={`/post/${image.id}`} key={index}>
                     <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
                       <img
-                        src={`http://localhost:5000/files/images/photos/${image.locationFile}`}
+                        src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
                         className="rounded-md mb-2"
                         alt=""
                       />

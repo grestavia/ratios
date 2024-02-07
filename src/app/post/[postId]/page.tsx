@@ -27,13 +27,12 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     const token = localStorage.getItem('token')
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/photos/${params.postId}`, {
+        const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
         setPost(response.data);
-        console.log(response.data);
         setLikesCount(response.data.data.likes.length);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -75,7 +74,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
             <div className="w-full">
               <img
                 className="rounded-lg w-full"
-                src={post?.data.locationFile && `http://localhost:5000/files/images/photos/${post.data.locationFile}`}
+                src={post?.data.locationFile && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${post.data.locationFile}`}
                 alt=""
               />
             </div>
@@ -93,7 +92,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                   }
                   avatarProps={
                     {
-                      src: post?.data.user.photoUrl && `http://localhost:5000/files/images/profiles/${post.data.user.photoUrl}`
+                      src: post?.data.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${post.data.user.photoUrl}`
                     }
                   }
                 />

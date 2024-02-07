@@ -5,10 +5,13 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  dropdownSection,
+  DropdownSection
 } from "@nextui-org/react";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import { MdLogout, MdOutlinePerson } from "react-icons/md";
 
 export default function Header() {
   const [userdata, setUserData] = useState<any>([]);
@@ -20,7 +23,7 @@ export default function Header() {
       if (token) {
         setJWT(token);
         const response = await axios.get(
-          `http://localhost:5000/users/account`,
+          process.env.NEXT_PUBLIC_API_RATIO + "/users/account",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,19 +67,24 @@ export default function Header() {
           <DropdownTrigger>
             {jwt && userdata && (
               <img
-                src={userdata.photoUrl && `http://localhost:5000/files/images/profiles/${userdata.photoUrl}`}
+                src={userdata.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${userdata.photoUrl}`}
                 className="max-h-[40px] max-w-[40px] rounded-full cursor-pointer"
                 alt=""
               />
             )}
           </DropdownTrigger>
-          <DropdownMenu aria-label="Static Actions">
-            <DropdownItem href={`/profile`}>
+          <DropdownMenu disabledKeys={["usn"]} aria-label="Static Actions">
+            <DropdownSection title="Current User" showDivider>
+              <DropdownItem key="usn">@{userdata.username}</DropdownItem>
+            </DropdownSection>
+            <DropdownSection title="Menu">
+            <DropdownItem startContent={<MdOutlinePerson />} href={`/profile`}>
               Akun Anda
             </DropdownItem>
-            <DropdownItem onClick={logout} className="text-red-500">
+            <DropdownItem startContent={<MdLogout />} onClick={logout} className="text-red-500">
               Keluar
             </DropdownItem>
+            </DropdownSection>
           </DropdownMenu>
         </Dropdown>
       </div>

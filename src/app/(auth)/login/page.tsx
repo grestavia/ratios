@@ -1,5 +1,5 @@
 "use client";
-import Header from "@/app/components/header";
+import { MdError } from "react-icons/md";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
@@ -9,12 +9,12 @@ import {
   MdOutlineKey,
 } from "react-icons/md";
 import { useState, FormEvent, useEffect } from "react";
-import Alert from "@mui/material/Alert";
+import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const router = useRouter();
-  
+
   const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [errorAlert, setErrorAlert] = useState(false);
@@ -26,7 +26,7 @@ export default function Login() {
   const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const response = await fetch("http://localhost:5000/users/auth/login", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,16 +39,15 @@ export default function Login() {
     if (data.status === 400) {
       setErrorAlert(true);
       setErrorMessage(
-        "Error Terjadi: " +
-          data.errors.messages
-            .map((item: { message: string }) => item.message)
-            .join(" dan ")
+        data.errors.messages
+          .map((item: { message: string }) => item.message)
+          .join(" dan ")
       );
       setTimeout(() => {
         setErrorAlert(false);
       }, 3000);
     } else if (response.ok) {
-      localStorage.setItem("token",data.data.token)
+      localStorage.setItem("token", data.data.token)
       router.push('/')
     }
   };
@@ -64,13 +63,19 @@ export default function Login() {
   return (
     <>
       {errorAlert && (
-        <Alert
-          variant="filled"
-          className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
-          severity="error"
-        >
-          {errorMessage}
-        </Alert>
+        <>
+          <motion.div initial={{ opacity: 0, x: '-50%', y: '10' }}
+            animate={{ opacity: 1, y: '-50%' }}
+            transition={{ ease: "easeIn", duration: 0.5 }} className="bg-[#ec8d8d] px-7 py-3 absolute top-unit-20 rounded-md left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="flex items-center">
+              <MdError className="text-[#cf3d3d] w-9 h-9" />
+              <section className="message flex flex-col mx-3">
+                <h1 className="text-md font-semibold text-white">Error</h1>
+                <p className="text-sm text-white">{errorMessage}</p>
+              </section>
+            </div>
+          </motion.div>
+        </>
       )}
       <div className="flex justify-between pt-20 px-5 lg:px-10">
         <div className="konten flex flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">

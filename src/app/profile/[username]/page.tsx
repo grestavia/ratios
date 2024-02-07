@@ -15,7 +15,7 @@ export default function SearchUser({ params }: { params: { username: string } })
     useEffect(() => {
         const token = localStorage.getItem("token");
         const fetchDataUser = async () => {
-            const response1 = await axios.get(`http://localhost:5000/users/account/${params.username}`, {
+            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${params.username}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -29,19 +29,19 @@ export default function SearchUser({ params }: { params: { username: string } })
             }
         };
         const checkUser = async () => {
-            const response1 = await axios.get(`http://localhost:5000/users/account`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             const dataUser = response1.data.data;
             if (Array.isArray(dataUser)) {
-              const userId = dataUser.map((user) => user.id);
-      
-              setUserCheck(dataUser[0]);
-              console.log(dataUser[0]);
+                const userId = dataUser.map((user) => user.id);
+
+                setUserCheck(dataUser[0]);
+                console.log(dataUser[0]);
             }
-          };
+        };
         fetchDataUser();
         checkUser();
     }, [])
@@ -58,7 +58,7 @@ export default function SearchUser({ params }: { params: { username: string } })
                         <img
                             src={
                                 userdata?.photoUrl &&
-                                `http://localhost:5000/files/images/profiles/${userdata?.photoUrl}`
+                                process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${userdata?.photoUrl}`
                             }
                             className="p-1 bg-white border-3 border-dashed border-[#07A081] rounded-full w-[100px] h-[100px]"
                             alt=""
@@ -90,21 +90,25 @@ export default function SearchUser({ params }: { params: { username: string } })
                             aria-label="Options"
                         >
                             <Tab key="post" title="Post">
-                                <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                                    {imagedata.map((image: any, index: any) => {
-                                        return (
-                                            <Link href={`/post/${image.id}`} key={index}>
-                                                <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
-                                                    <img
-                                                        src={`http://localhost:5000/files/images/photos/${image.locationFile}`}
-                                                        alt=""
-                                                        className="rounded-md mb-2"
-                                                    />
-                                                </div>
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
+                                {imagedata.length === 0 ? (
+                                    <p className="text-gray-500">Pengguna ini belum mengunggah foto apapun.</p>
+                                ) : (
+                                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
+                                        {imagedata.map((image: any, index: any) => {
+                                            return (
+                                                <Link href={`/post/${image.id}`} key={index}>
+                                                    <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
+                                                        <img
+                                                            src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
+                                                            alt=""
+                                                            className="rounded-md mb-2"
+                                                        />
+                                                    </div>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </Tab>
                             <Tab key="album" title="Album">
                                 <h1>Album</h1>

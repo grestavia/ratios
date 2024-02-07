@@ -3,13 +3,38 @@ import Sidebar from "@/app/components/sidebar";
 import { useEffect, useState, FormEvent } from "react";
 import axios from "axios";
 import { Badge, Input } from "@nextui-org/react";
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale'
+import { formatRelative, subDays } from 'date-fns'
 
 export default function EditProfile() {
-  const [userdata, setUserData] = useState<any>([]);
   const [photoplaceholder, setPhotoPlaceholder] = useState<string | null>(null);
-  const [name, setName] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
-  const [adress, setAdress] = useState("");
+
+  interface FormData {
+    username: string;
+    fullName: string;
+    address: string;
+    photoUrl: any;
+    email: string;
+  }
+
+  const [formData, setFormData] = useState<FormData>({
+    'username': '',
+    'fullName': '',
+    'address': '',
+    'email': '',
+    'photoUrl': null
+  })
+
+
+  const handleInputChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value
+    }));
+  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -19,24 +44,19 @@ export default function EditProfile() {
     }
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setName(value);
-  }
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-
     const payload = {
-      photoUrl: photo,
-      fullName: name,
-      address: adress,
-    };
-
+      username: formData.username,
+      fullName: formData.fullName,
+      address: formData.address,
+      email: formData.email,
+      photoUrl: photo
+    }
     try {
       const response = await axios.put(
-        "http://localhost:5000/users/account/profile",
+        process.env.NEXT_PUBLIC_API_RATIO + "/users/account/profile",
         payload,
         {
           headers: {
@@ -55,7 +75,7 @@ export default function EditProfile() {
     const token = localStorage.getItem("token");
     const fetchUserData = async () => {
       const responseUser = await axios.get(
-        `http://localhost:5000/users/account`,
+        process.env.NEXT_PUBLIC_API_RATIO + `/users/account`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,13 +84,19 @@ export default function EditProfile() {
       );
       const dataUser = responseUser.data.data;
       if (Array.isArray(dataUser)) {
-        const userId = dataUser.map((user) => user.id);
-        console.log(dataUser);
-        setUserData(dataUser[0]);
+        const firstUser = dataUser[0];
+        setFormData({
+          username: firstUser.username,
+          fullName: firstUser.fullName,
+          address: firstUser.address,
+          photoUrl: firstUser.photoUrl,
+          email: firstUser.email,
+        });
       }
     };
     fetchUserData();
   }, []);
+
   return (
     <>
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
@@ -111,8 +137,8 @@ export default function EditProfile() {
                         <>
                           <img
                             src={
-                              userdata?.photoUrl &&
-                              `http://localhost:5000/files/images/profiles/${userdata?.photoUrl}`
+                              formData?.photoUrl &&
+                              process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${formData?.photoUrl}`
                             }
                             alt=""
                             className="rounded-full h-[90px] w-[90px] hover: brightness-75"
@@ -122,35 +148,38 @@ export default function EditProfile() {
                     </div>
                   </Badge>
                 </div>
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-col md:flex-row gap-0 md:gap-4">
                   <Input
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleInputChange}
                     type="text"
-                    name="name"
+                    name="fullName"
                     label="Nama"
+                    value={formData.fullName}
                     required
                     className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
                   />
                   <Input
                     type="text"
                     name="username"
-                    value={`@${userdata.username}`}
                     label="Username"
-                    readOnly
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
                   />
                 </div>
                 <Input
-                  value={userdata.email}
+                  value={formData.email}
                   readOnly
                   label="Email"
                   className="mb-3"
                 />
                 <Input
-                  value={userdata.address}
+                  value={formData.address}
                   label="Alamat"
                   required
                   className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
-                  onChange={(e) => setAdress(e.target.value)}
+                  onChange={handleInputChange}
+                  name="address"
                 />
                 <input
                   type="submit"

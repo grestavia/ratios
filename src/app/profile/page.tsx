@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
 import { Tabs, Tab, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Link from "next/link";
@@ -9,11 +8,12 @@ import axios from "axios";
 export default function Profile() {
   const [userdata, setUserData] = useState<any>([]);
   const [imagedata, setImageData] = useState<any>([]);
+  const [albumdata, setAlbumData] = useState<any>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const fetchData1 = async () => {
-      const response1 = await axios.get(`http://localhost:5000/users/account`, {
+      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -24,27 +24,28 @@ export default function Profile() {
 
         setUserData(dataUser[0]);
         console.log(dataUser[0]);
-        
+
       }
     };
     const fetchData2 = async () => {
-      const response2 = await axios.get(`http://localhost:5000/photos/user`, {
+      const response2 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const dataPhoto = response2.data.data;
       setImageData(dataPhoto);
-      
+
     };
 
     const fetchData3 = async () => {
-      const response3 = await axios.get(`http://localhost:5000/albums`, {
+      const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/albums`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
       const dataAlbum = response3.data.data;
+      setAlbumData(dataAlbum);
       console.log(dataAlbum);
     }
 
@@ -65,7 +66,7 @@ export default function Profile() {
               <img
                 src={
                   userdata?.photoUrl &&
-                  `http://localhost:5000/files/images/profiles/${userdata?.photoUrl}`
+                  process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${userdata?.photoUrl}`
                 }
                 className="p-1 bg-white border-3 border-dashed border-[#07A081] rounded-full w-[100px] h-[100px]"
                 alt=""
@@ -90,38 +91,40 @@ export default function Profile() {
                 aria-label="Options"
               >
                 <Tab key="post" title="Post">
-                  <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                    {imagedata.map((image: any, index: any) => {
-                      return (
-                        <Link href={`/post/${image.id}`} key={index}>
-                          <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
-                            <img
-                              src={`http://localhost:5000/files/images/photos/${image.locationFile}`}
-                              alt=""
-                              className="rounded-md mb-2"
-                            />
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  {imagedata.length === 0 ? (
+                    <p className="text-gray-500">Kamu belum mengunggah foto apapun.</p>
+                  ) : (
+                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
+                      {imagedata.map((image: any, index: any) => {
+                        return (
+                          <Link href={`/post/${image.id}`} key={index}>
+                            <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
+                              <img
+                                src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
+                                alt=""
+                                className="rounded-md mb-2"
+                              />
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </Tab>
                 <Tab key="album" title="Album">
-                  <div className=" border-2 border-green w-full lg:columns-4 md:columns-3 columns-1 gap-3">
-                    <Link href={"/"}>
-                      <div className="relative">
-                        <Image
-                          src="https://source.unsplash.com/W3FC_bCPw8E"
-                          className="aspect-square absolute inset-0"
-                        />
-                        <Image
-                          src="https://source.unsplash.com/W3FC_bCPw8E"
-                          className="aspect-square absolute inset-0"
-                        />
-                      </div>
-                      Judul
-                    </Link>
-                  </div>
+                  {albumdata.length === 0 ? (
+                    <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
+                  ) : (
+                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
+                      {albumdata.map((album: any, index: any) => {
+                      return (
+                        <Link href={`/album/${album.id}`} key={index}>
+                        <h1 key={index}>{album.title}</h1>
+                        </Link>
+                      )
+                    })}
+                    </div>
+                  )}
                 </Tab>
               </Tabs>
             </div>
