@@ -1,6 +1,6 @@
 "use client";
 import Sidebar from "@/app/components/sidebar";
-import { User } from "@nextui-org/react";
+import { User, button } from "@nextui-org/react";
 import {
   Modal,
   ModalContent,
@@ -23,6 +23,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
   const [currentUserId, setUserId] = useState<any>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Get Data User Saat Ini
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
       if (Array.isArray(dataUser)) {
         const userId = dataUser.map((user) => user.id);
         setUserId(dataUser[0].id);
+        setCurrentUser(dataUser[0]);
       }
     };
     fetchData1();
@@ -119,6 +121,8 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
+  const isOwner = currentUser && post && currentUser.id === post.data.user.id;
+
   return (
     <>
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
@@ -155,7 +159,9 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 <button onClick={handleLikeClick} className={isLiked ? "flex transition-all duration-300 ease-in-out border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</button>
                 <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
               </div>
-              <button
+              { isOwner ? (
+                <>
+                <button
                 onClick={onOpen}
                 className="w-full transition-all duration-300 ease-in-out mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
               >
@@ -212,6 +218,16 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                   )}
                 </ModalContent>
               </Modal>
+                </>
+              ) : (
+                <>
+                <Link href={`/post/${post?.data.id}/edit`} className="w-full">
+                <button className="w-full transition-all duration-300 ease-in-out mt-3 rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent">
+                  Edit Postingan
+                </button>
+                </Link>
+                </>
+              )}
               <div className="comment mt-5 overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-[#F0F4F9] h-[250px] rounded-lg">
               </div>
             </div>
