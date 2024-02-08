@@ -3,6 +3,7 @@ import Sidebar from "@/app/components/sidebar";
 import { Tabs, Tab, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@nextui-org/react";
 import axios from "axios";
 
 export default function Profile() {
@@ -79,9 +80,9 @@ export default function Profile() {
                 <Link
                   href="/profile/edit"
                 >
-                  <button className="bg-[#07A081] text-white p-2 rounded-lg">
+                  <Button className="bg-[#07A081] text-white p-2 rounded-lg">
                     Edit Profile
-                  </button>
+                  </Button>
                 </Link>
               </section>
               <Tabs

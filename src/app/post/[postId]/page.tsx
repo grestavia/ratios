@@ -1,17 +1,18 @@
 "use client";
 import Sidebar from "@/app/components/sidebar";
-import { User, button } from "@nextui-org/react";
+import { User } from "@nextui-org/react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Button,
   useDisclosure,
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useState } from "react";
-import { MdFavoriteBorder, MdLibraryAdd, MdFavorite } from "react-icons/md";
+import { MdFavoriteBorder, MdLibraryAdd, MdFavorite, MdArrowUpward } from "react-icons/md";
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -23,6 +24,8 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
   const [currentUserId, setUserId] = useState<any>([]);
+  const [comments, setComments] = useState<any>([]);
+  const [commentlist, setCommentList] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Get Data User Saat Ini
@@ -56,7 +59,13 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
           }
         });
         setLikesCount(response.data.data.likes.length);
+        const commentsData = response.data.data.comentars;
+        if (Array.isArray(commentsData)) {
+          const commentIds = commentsData.map(comment => comment.id);
+          setCommentList(commentsData);
+        }
         setPost(response.data);
+        console.log(response.data.data);
         // Cek Apakah User Sudah Menyukai Postingan
         const isUserLiked = response.data.data.likes.some((like: any) => like.userId === currentUserId);
         setIsLiked(isUserLiked);
@@ -90,6 +99,24 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+
+  const handleComment = async (e: any) => {
+    try {
+      const token = localStorage.getItem('token');
+      const payload = {
+        comentar: comments,
+      }
+      const commentResponse = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/comentar`, payload, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      console.log(commentResponse.data);
+    } catch (error) {
+      console.error("Error handling comment:", error);
+    }
+
+  }
 
   // Handler Like
   const handleLikeClick = async () => {
@@ -156,25 +183,25 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 />
               </Link>
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
-                <button onClick={handleLikeClick} className={isLiked ? "flex transition-all duration-300 ease-in-out border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</button>
-                <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
+                <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
+                <Button className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
               </div>
               {isOwner ? (
                 <>
                   <Link href={`/post/${post?.data.id}/edit`} className="w-full">
-                    <button className="w-full transition-all duration-300 ease-in-out mt-3 rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent">
+                    <Button className="w-full transition-all duration-300 ease-in-out mt-3 rounded-lg p-2 bg-[#07A081] text-white border-1">
                       Edit Postingan
-                    </button>
+                    </Button>
                   </Link>
                 </>
               ) : (
                 <>
-                  <button
+                  <Button
                     onClick={onOpen}
-                    className="w-full transition-all duration-300 ease-in-out mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
+                    className="w-full mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1"
                   >
                     Kirim Donasi
-                  </button>
+                  </Button>
                   <Modal
                     className="rounded-lg"
                     isOpen={isOpen}
@@ -228,7 +255,52 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                   </Modal>
                 </>
               )}
-              <div className="comment mt-5 overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-[#F0F4F9] h-[250px] rounded-lg">
+              <div className="flex mt-5 p-2 bg-[#F0F4F9] gap-3 rounded-xl flex-col">
+                <div className="overflow-scroll h-[350px] scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
+                  <div>
+                    <h1 className="text-lg text-stone-600 font-medium p-3">Komentar</h1>
+                    <hr className="px-5" />
+                    {commentlist.map((komentar: any, index: any) => {
+                      return (
+                        <>
+                          <div className="px-3 mt-5">
+                            <Link href={`/profile/${komentar.user.username}`}>
+                            <User
+                              name={komentar.user.fullName}
+                              description= {
+                                <p>
+                                  @{komentar.user.username}
+                                </p>
+                              }
+                              avatarProps={{
+                                src: komentar.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${komentar.user.photoUrl}`,
+                                size: "sm"
+                              }}
+                            />
+                            </Link>
+                            <p className="text-md">{komentar.comentar}</p>
+                          </div>
+                        </>
+                      )
+                    }
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-white w-full">
+                  <form onSubmit={handleComment}>
+                    <div className="w-full flex justify-between rounded-xl gap-2 border-2 p-1 border-[#07A081]">
+                      <input
+                        type="text"
+                        onChange={(e) => setComments(e.target.value)}
+                        className="w-full pl-2 focus:outline-none"
+                        placeholder="Tambah Komentar"
+                      />
+                      <Button type="submit" className="bg-[#07A081] text-white rounded-lg">
+                        <MdArrowUpward />
+                      </Button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

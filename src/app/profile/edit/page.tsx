@@ -2,10 +2,15 @@
 import Sidebar from "@/app/components/sidebar";
 import { useEffect, useState, FormEvent } from "react";
 import axios from "axios";
+import { Button } from "@nextui-org/react"; 
 import { Badge, Input } from "@nextui-org/react";
+import Alert from "@mui/material/Alert";
+import { useRouter } from "next/navigation";
 
 export default function EditProfile() {
+  const router = useRouter();
   const [photoplaceholder, setPhotoPlaceholder] = useState<string | null>(null);
+  const [sucessAlert, setSucessAlert] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
 
   interface FormData {
@@ -63,6 +68,8 @@ export default function EditProfile() {
         }
       );
       console.log("Photo uploaded successfully:", response.data);
+      router.push("/profile");
+      setSucessAlert(true);
     } catch (error) {
       console.error("Error uploading photo:", error);
     }
@@ -96,6 +103,15 @@ export default function EditProfile() {
 
   return (
     <>
+    {sucessAlert && (
+      <Alert
+        variant="filled"
+        className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+        severity="success"
+      >
+        Profil Berhasil Diperbarui
+      </Alert>
+    )}
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
@@ -178,11 +194,10 @@ export default function EditProfile() {
                   onChange={handleInputChange}
                   name="address"
                 />
-                <input
+                <Button
                   type="submit"
-                  value="Perbarui"
                   className="w-full cursor-pointer bg-[#07A081] rounded-md py-3 px-2 text-white"
-                />
+                >Perbarui</Button>
               </form>
             </section>
           </div>

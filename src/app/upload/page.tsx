@@ -8,8 +8,11 @@ import {
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
+import { Button } from "@nextui-org/react"; 
+import { useRouter } from "next/navigation";
 
 export default function Upload() {
+  const router = useRouter();
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('');
   const [fileName, setFileName] = useState("No Selected File");
@@ -49,11 +52,12 @@ export default function Upload() {
         },
       });
       console.log("Photo uploaded successfully:", response.data);
+      const postData = response.data.data;
       setSucessAlert(true);
       setTimeout(() => {
         setSucessAlert(false);
       }, 3000);
-      window.location.reload();
+      router.push(`/post/${postData.id}`);
     } catch (error) {
       console.error("Error uploading photo:", error);
     }
@@ -148,11 +152,10 @@ export default function Upload() {
                   onChange={(e) => setDescription(e.target.value)}
 
                 ></textarea>
-                <input
+                <Button
                   type="submit"
-                  value="Unggah"
                   className="w-full cursor-pointer bg-[#07A081] rounded-md py-1 px-2 mt-1 text-white"
-                />
+                >Unggah</Button>
               </section>
             </form>
           </div>
