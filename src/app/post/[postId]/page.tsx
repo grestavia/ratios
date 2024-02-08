@@ -159,73 +159,73 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 <button onClick={handleLikeClick} className={isLiked ? "flex transition-all duration-300 ease-in-out border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</button>
                 <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
               </div>
-              { isOwner ? (
+              {isOwner ? (
                 <>
-                <button
-                onClick={onOpen}
-                className="w-full transition-all duration-300 ease-in-out mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
-              >
-                Kirim Donasi
-              </button>
-              <Modal
-                className="rounded-lg"
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-              >
-                <ModalContent>
-                  {(onClose) => (
-                    <form onSubmit={handleSubmit}>
-                      <ModalHeader className="flex flex-col gap-1">
-                        Beri Donasi
-                      </ModalHeader>
-                      <ModalBody className="gap-0">
-                        <hr />
-                        <p className="mt-2 mb-2">
-                          Masukkan nominal yang ingin Anda donasikan :
-                        </p>
-                        <input
-                          type="number"
-                          name=""
-                          placeholder="Rp. 5.000"
-                          className={`w-full border-${isInvalidInput ? "red" : "#07A081"
-                            } rounded-md border-2 p-2`}
-                          id=""
-                          onChange={handleInputChange}
-                        />
-                        {isInvalidInput && (
-                          <p className="text-red-500">
-                            Nominal Donasi Minimal Rp. 5.000
-                          </p>
-                        )}
-                        <div className="flex flex-col gap-0.5">
-                          <p className="mt-3">
-                            Subtotal: Rp. {formatNumber(inputValue)}
-                          </p>
-                          <p>Admin Fee: Rp. 1.000</p>
-                          <p>Total: Rp. {formatNumber(inputValue + 1000)}</p>
-                        </div>
-                      </ModalBody>
-                      <ModalFooter>
-                        <input
-                          type="submit"
-                          value="Tarik Dana"
-                          id="submitButton"
-                          className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
-                          disabled={isInvalidInput}
-                        />
-                      </ModalFooter>
-                    </form>
-                  )}
-                </ModalContent>
-              </Modal>
+                  <Link href={`/post/${post?.data.id}/edit`} className="w-full">
+                    <button className="w-full transition-all duration-300 ease-in-out mt-3 rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent">
+                      Edit Postingan
+                    </button>
+                  </Link>
                 </>
               ) : (
                 <>
-                <Link href={`/post/${post?.data.id}/edit`} className="w-full">
-                <button className="w-full transition-all duration-300 ease-in-out mt-3 rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent">
-                  Edit Postingan
-                </button>
-                </Link>
+                  <button
+                    onClick={onOpen}
+                    className="w-full transition-all duration-300 ease-in-out mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent"
+                  >
+                    Kirim Donasi
+                  </button>
+                  <Modal
+                    className="rounded-lg"
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                  >
+                    <ModalContent>
+                      {(onClose) => (
+                        <form onSubmit={handleSubmit}>
+                          <ModalHeader className="flex flex-col gap-1">
+                            Beri Donasi
+                          </ModalHeader>
+                          <ModalBody className="gap-0">
+                            <hr />
+                            <p className="mt-2 mb-2">
+                              Masukkan nominal yang ingin Anda donasikan :
+                            </p>
+                            <input
+                              type="number"
+                              name=""
+                              placeholder="Rp. 5.000"
+                              className={`w-full border-${isInvalidInput ? "red" : "#07A081"
+                                } rounded-md border-2 p-2`}
+                              id=""
+                              onChange={handleInputChange}
+                            />
+                            {isInvalidInput && (
+                              <p className="text-red-500">
+                                Nominal Donasi Minimal Rp. 5.000
+                              </p>
+                            )}
+                            <div className="flex flex-col gap-0.5">
+                              <p className="mt-3">
+                                Subtotal: Rp. {formatNumber(inputValue)}
+                              </p>
+                              <p>Admin Fee: Rp. 1.000</p>
+                              <p>Total: Rp. {formatNumber(inputValue + 1000)}</p>
+                            </div>
+                          </ModalBody>
+                          <ModalFooter>
+                            <input
+                              type="submit"
+                              value="Tarik Dana"
+                              id="submitButton"
+                              className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
+                              disabled={isInvalidInput}
+                            />
+                          </ModalFooter>
+                        </form>
+                      )}
+                    </ModalContent>
+                  </Modal>
                 </>
               )}
               <div className="comment mt-5 overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-[#F0F4F9] h-[250px] rounded-lg">

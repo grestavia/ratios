@@ -3,9 +3,6 @@ import Sidebar from "@/app/components/sidebar";
 import { useEffect, useState, FormEvent } from "react";
 import axios from "axios";
 import { Badge, Input } from "@nextui-org/react";
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale'
-import { formatRelative, subDays } from 'date-fns'
 
 export default function EditProfile() {
   const [photoplaceholder, setPhotoPlaceholder] = useState<string | null>(null);
@@ -44,7 +41,7 @@ export default function EditProfile() {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const payload = {
