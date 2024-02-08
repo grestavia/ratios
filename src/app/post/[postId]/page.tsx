@@ -22,10 +22,28 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [post, setPost] = useState<{ data?: any } | null>(null);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
-
+  const [currentUserId, setUserId] = useState<any>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+    const fetchData1 = async () => {
+      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const dataUser = response1.data.data;
+      if (Array.isArray(dataUser)) {
+        const userId = dataUser.map((user) => user.id);
+        setUserId(dataUser[0].id);
+      }
+    };
+    fetchData1();
+  }, [])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
     const fetchPost = async () => {
       try {
         const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, {
@@ -33,15 +51,17 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
             "Authorization": `Bearer ${token}`
           }
         });
-        setPost(response.data);
         setLikesCount(response.data.data.likes.length);
+        setPost(response.data);
+        // Periksa apakah pengguna sudah menyukai postingan
+        const isUserLiked = response.data.data.likes.some((like: any) => like.userId === currentUserId);
+        setIsLiked(isUserLiked);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
     };
-
     fetchPost();
-  }, [params]);
+  }, [params, currentUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -69,16 +89,30 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
 
   const handleLikeClick = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, null, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      setLikesCount(likesCount + 1);
-      setIsLiked(true);
+      const token = localStorage.getItem('token');
+      let response;
+
+      if (isLiked) {
+        // Jika pengguna telah menyukai postingan, hapus like
+        response = await axios.delete(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        setLikesCount(likesCount - 1);
+      } else {
+        // Jika pengguna belum menyukai postingan, tambahkan like
+        response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, null, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        setLikesCount(likesCount + 1);
+      }
+
+      setIsLiked(!isLiked);
     } catch (error) {
-      console.error("Error liking post:", error);
+      console.error("Error handling like:", error);
     }
   };
 
@@ -115,7 +149,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 />
               </Link>
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
-                <button onClick={handleLikeClick} className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
+                <button onClick={handleLikeClick} className={isLiked ? "flex items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
                 <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
               </div>
               <button
