@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useState } from "react";
-import { MdFavoriteBorder, MdLibraryAdd } from "react-icons/md";
+import { MdFavoriteBorder, MdLibraryAdd, MdFavorite } from "react-icons/md";
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -24,6 +24,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [isLiked, setIsLiked] = useState(false);
   const [currentUserId, setUserId] = useState<any>([]);
 
+  // Get Data User Saat Ini
   useEffect(() => {
     const token = localStorage.getItem('token');
     const fetchData1 = async () => {
@@ -41,6 +42,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     fetchData1();
   }, [])
 
+  // Get Data Post dan Set Status Like
   useEffect(() => {
     const token = localStorage.getItem('token');
 
@@ -53,7 +55,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
         });
         setLikesCount(response.data.data.likes.length);
         setPost(response.data);
-        // Periksa apakah pengguna sudah menyukai postingan
+        // Cek Apakah User Sudah Menyukai Postingan
         const isUserLiked = response.data.data.likes.some((like: any) => like.userId === currentUserId);
         setIsLiked(isUserLiked);
       } catch (error) {
@@ -63,14 +65,12 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     fetchPost();
   }, [params, currentUserId]);
 
+  // Handler Nilai Input, Validasi
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    setInputValue(value);
-
     const isInvalid = value < 5000;
-
+    setInputValue(value);
     setIsInvalidInput(isInvalid);
-
     const submitButton = document.getElementById(
       "submitButton"
     ) as HTMLInputElement;
@@ -79,21 +79,24 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
+  // Format Angka
   const formatNumber = (number: number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
+  // Handler Submit Form
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
+  // Handler Like
   const handleLikeClick = async () => {
     try {
       const token = localStorage.getItem('token');
       let response;
 
       if (isLiked) {
-        // Jika pengguna telah menyukai postingan, hapus like
+        // Jika Sudah Like, Maka Fungsi TOmbol Menjadi Delete Like
         response = await axios.delete(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -101,7 +104,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
         });
         setLikesCount(likesCount - 1);
       } else {
-        // Jika pengguna belum menyukai postingan, tambahkan like
+        // Jika Belum Like, Fungsi Tombol Menjadi Post Like
         response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, null, {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -149,7 +152,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 />
               </Link>
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
-                <button onClick={handleLikeClick} className={isLiked ? "flex items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
+                <button onClick={handleLikeClick} className={isLiked ? "flex transition-all duration-300 ease-in-out border-1 hover:border-[#07A081] hover:text-[#07A081] hover:bg-transparent items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</button>
                 <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
               </div>
               <button
