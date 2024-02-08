@@ -4,7 +4,6 @@ import Sidebar from "./components/sidebar";
 import Link from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
-import motion from "framer-motion"
 
 export default function Home() {
   const [sidebar, setSidebar] = useState(true);

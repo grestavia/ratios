@@ -21,6 +21,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [isInvalidInput, setIsInvalidInput] = useState(false);
   const [post, setPost] = useState<{ data?: any } | null>(null);
   const [likesCount, setLikesCount] = useState<number>(0);
+  const [isLiked, setIsLiked] = useState(false);
 
 
   useEffect(() => {
@@ -65,6 +66,22 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+
+  const handleLikeClick = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, null, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      setLikesCount(likesCount + 1);
+      setIsLiked(true);
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
@@ -98,7 +115,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                 />
               </Link>
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
-                <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
+                <button onClick={handleLikeClick} className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdFavoriteBorder className="size-7" /> {likesCount} Suka</button>
                 <button className="flex transition-all duration-300 ease-in-out hover:bg-[#07A081] hover:text-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-7" /> Tambah Ke Album</button>
               </div>
               <button
