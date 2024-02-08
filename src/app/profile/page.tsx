@@ -21,38 +21,38 @@ export default function Profile() {
       const dataUser = response1.data.data;
       if (Array.isArray(dataUser)) {
         const userId = dataUser.map((user) => user.id);
-
         setUserData(dataUser[0]);
-        console.log(dataUser[0]);
-
       }
     };
-    const fetchData2 = async () => {
-      const response2 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const dataPhoto = response2.data.data;
-      setImageData(dataPhoto);
-
-    };
-
-    const fetchData3 = async () => {
-      const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/albums`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-      const dataAlbum = response3.data.data;
-      setAlbumData(dataAlbum);
-      console.log(dataAlbum);
-    }
-
     fetchData1();
-    fetchData2();
-    fetchData3();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (userdata.id) {
+      const fetchData2 = async () => {
+        const response2 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/users/${userdata.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const dataPhoto = response2.data.data;
+        setImageData(dataPhoto);
+      };
+      fetchData2();
+
+      const fetchData3 = async () => {
+        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/albums/users/${userdata.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const dataAlbum = response3.data.data;
+        setAlbumData(dataAlbum);
+      }
+      fetchData3();
+    }
+  }, [userdata]);
 
   const variant = "underlined";
 
@@ -117,12 +117,12 @@ export default function Profile() {
                   ) : (
                     <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
                       {albumdata.map((album: any, index: any) => {
-                      return (
-                        <Link href={`/album/${album.id}`} key={index}>
-                        <h1 key={index}>{album.title}</h1>
-                        </Link>
-                      )
-                    })}
+                        return (
+                          <Link href={`/album/${album.id}`} key={index}>
+                            <h1 key={index}>{album.title}</h1>
+                          </Link>
+                        )
+                      })}
                     </div>
                   )}
                 </Tab>

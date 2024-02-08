@@ -11,7 +11,11 @@ export default function Home() {
 
   useEffect(()=> {
     const fetchImage = async () => {
-      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos");
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
       const imageData = response.data.data;
       if (Array.isArray(imageData)) {
         const imageIds = imageData.map(image => image.id);
