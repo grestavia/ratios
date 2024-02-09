@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { MdArrowUpward, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md';
-import { Button, User, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, } from '@nextui-org/react';
+import {
+    Button, User, Dropdown, Modal,
+    ModalContent,
+    ModalHeader,
+    useDisclosure,
+    ModalBody,
+    Textarea,
+    ModalFooter, DropdownTrigger, DropdownMenu, DropdownItem,
+} from '@nextui-org/react';
 import Link from 'next/link';
 import { formatRelative, subDays } from 'date-fns';
 import { id } from 'date-fns/locale'
@@ -10,14 +18,22 @@ interface CommentProps {
     postId: string;
 }
 
+interface CommentData {
+    comentar: string;
+}
+
 const Comment: React.FC<CommentProps> = ({ postId }) => {
     const [comments, setComments] = useState<string>('');
     const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
     const [commentList, setCommentList] = useState<any[]>([]);
+    const [editingCommentId, setEditingCommentId] = useState<string | null>(null); // State baru untuk menyimpan ID komentar yang sedang diedit
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        // Fungsi untuk mengambil data pengguna yang sudah login
         const fetchDataUser = async () => {
+            const token = localStorage.getItem("token");
             const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -34,6 +50,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
     }, []);
 
     useEffect(() => {
+        // Fungsi untuk mengambil komentar dari server
         const fetchComments = async () => {
             try {
                 const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${postId}`, {
@@ -43,7 +60,6 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                 });
                 const commentData = response.data.data.comentars;
                 if (Array.isArray(commentData)) {
-                    const commentIds = commentData.map(comment => comment.id);
                     setCommentList(commentData);
                 }
             } catch (error) {
@@ -79,6 +95,34 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
         }
     }
 
+    const handleCommentUpdate = async (e: any) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            const payload = {
+                comentar: comments,
+            }
+            const commentResponse = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${editingCommentId}/update`, payload, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            console.log(commentResponse.data);
+            // Setelah berhasil update, kosongkan input komentar dan tutup modal
+            setComments('');
+            setEditingCommentId(null); // Reset editingCommentId setelah update berhasil
+            onClose();
+        } catch (error) {
+            console.error("Error handling comment update:", error);
+        }
+    }
+
+    const handleEditComment = (commentId: string, commentText: string) => {
+        setEditingCommentId(commentId); // Atur ID komentar yang akan diedit
+        setComments(commentText); // Isi input komentar dengan teks komentar yang akan diupdate
+        onOpen(); // Buka modal edit komentar
+    }
+
     const handleDeleteComment = async (commentId: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -96,53 +140,54 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
 
     return (
         <div className="komentar flex mt-5 p-2 bg-[#F0F4F9] gap-3 rounded-xl flex-col">
+            <div>
+                <h1 className="text-lg text-stone-600 font-medium p-3">Komentar</h1>
+                <hr className="px-5" />
+            </div>
             <div className="overflow-scroll h-[350px] scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
-                <div>
-                    <h1 className="text-lg text-stone-600 font-medium p-3">Komentar</h1>
-                    <hr className="px-5" />
-                    {commentList.map((komentar: any, index: any) => (
-                        <div className="px-3 mt-5" key={index}>
-                            <div className='flex justify-between w-full'>
-                                <Link href={`/profile/${komentar.user.username}`}>
-                                    <User
-                                        name={komentar.user.fullName}
-                                        description={
-                                            <p>
-                                                {formatRelative(subDays(new Date(komentar.user.createdAt), 3), new Date(), { locale: id })} {/* Ubah format tanggal di sini */}
-                                            </p>
-                                        }
-                                        avatarProps={{
-                                            src: komentar.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${komentar.user.photoUrl}`,
-                                            size: "sm"
-                                        }}
-                                    />
-                                </Link>
-                                {loggedInUserId === komentar.user.id && (
-                                    <>
-
-                                        <Dropdown>
-                                            <DropdownTrigger>
-                                                <Button className='bg-transparent min-w-1'>
-                                                    <MdMoreVert />
-                                                </Button>
-                                            </DropdownTrigger>
-                                            <DropdownMenu aria-label="Static Actions">
-                                                <DropdownItem startContent={<MdEdit />} key="new">Edit Komentar</DropdownItem>
-                                                <DropdownItem onClick={() => handleDeleteComment(komentar.id)} startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
-                                                    Hapus Komentar
-                                                </DropdownItem>
-                                            </DropdownMenu>
-                                        </Dropdown>
-                                    </>
-                                )}
-                            </div>
-                            <p className="text-md">{komentar.comentar}</p>
+                {commentList.map((komentar: any, index: any) => (
+                    <div className="px-3 mt-5" key={index}>
+                        <div className='flex justify-between w-full'>
+                            <Link href={`/profile/${komentar.user.username}`}>
+                                <User
+                                    name={komentar.user.fullName}
+                                    description={
+                                        <p>
+                                            {formatRelative(subDays(new Date(komentar.user.createdAt), 3), new Date(), { locale: id })} {/* Ubah format tanggal di sini */}
+                                        </p>
+                                    }
+                                    avatarProps={{
+                                        src: komentar.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${komentar.user.photoUrl}`,
+                                        size: "sm"
+                                    }}
+                                />
+                            </Link>
+                            {loggedInUserId === komentar.user.id && (
+                                <>
+                                    <Dropdown>
+                                        <DropdownTrigger>
+                                            <Button className='bg-transparent min-w-1'>
+                                                <MdMoreVert />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu aria-label="Static Actions">
+                                            <DropdownItem onClick={() => handleEditComment(komentar.id, komentar.comentar)} startContent={<MdEdit />} key="edit">
+                                                Edit Komentar
+                                            </DropdownItem>
+                                            <DropdownItem onClick={() => handleDeleteComment(komentar.id)} startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
+                                                Hapus Komentar
+                                            </DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </>
+                            )}
                         </div>
-                    ))}
-                </div>
+                        <p className="text-md">{komentar.comentar}</p>
+                    </div>
+                ))}
             </div>
             <div className="rounded-xl bg-white w-full">
-                <form onSubmit={handleComment}>
+                <form onSubmit={editingCommentId ? handleCommentUpdate : handleComment}>
                     <div className="w-full flex justify-between rounded-xl gap-2 border-2 p-1 border-[#07A081]">
                         <input
                             type="text"
@@ -157,6 +202,27 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                     </div>
                 </form>
             </div>
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Edit Komentar</ModalHeader>
+                    <ModalBody>
+                        <Textarea
+                            value={comments}
+                            onChange={(e) => setComments(e.target.value)}
+                            label="Edit Komentar"
+                            className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onClick={onClose}>
+                            Batal
+                        </Button>
+                        <Button type="submit" className="bg-[#07A081] text-white" onClick={editingCommentId ? handleCommentUpdate : handleComment}>
+                            Edit
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </div>
     );
 }

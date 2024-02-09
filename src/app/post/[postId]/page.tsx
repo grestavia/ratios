@@ -141,22 +141,28 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
             <div className="w-full p-3 md:p-5 flex flex-col">
               <h1 className="text-xl md:text-3xl font-semibold">{post?.data.title}</h1>
               <p className="md:text-md text-sm">{post?.data.description}</p>
-              <Link href={`/profile/${post?.data.user.username}`}>
-                <User
-                  className="md:mt-5 mt-3 justify-start"
-                  name={post?.data.user.fullName}
-                  description={
-                    <p>
-                      @{post?.data.user.username}
-                    </p>
-                  }
-                  avatarProps={
-                    {
-                      src: post?.data.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${post.data.user.photoUrl}`
+              <div className="flex flex-row justify-between items-center">
+                <Link href={`/profile/${post?.data.user.username}`}>
+                  <User
+                    className="md:mt-5 mt-3 justify-start"
+                    name={post?.data.user.fullName}
+                    description={
+                      <p>
+                        @{post?.data.user.username}
+                      </p>
                     }
-                  }
-                />
-              </Link>
+                    avatarProps={
+                      {
+                        src: post?.data.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${post.data.user.photoUrl}`
+                      }
+                    }
+                  />
+                </Link>
+                {!isOwner && (
+                  <Button className="mt-3 bg-[#07A081] text-white">Follow</Button>
+                )}
+              </div>
+
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
                 <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
                 <Button className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
@@ -230,7 +236,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                   </Modal>
                 </>
               )}
-              <Comment postId={params.postId}/>
+              <Comment postId={params.postId} />
             </div>
           </div>
         </div>
