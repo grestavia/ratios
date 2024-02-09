@@ -59,7 +59,6 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
         });
         setLikesCount(response.data.data.likes.length);
         setPost(response.data);
-        console.log(response.data.data);
         // Cek Apakah User Sudah Menyukai Postingan
         const isUserLiked = response.data.data.likes.some((like: any) => like.userId === currentUserId);
         setIsLiked(isUserLiked);
