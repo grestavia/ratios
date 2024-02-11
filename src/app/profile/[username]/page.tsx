@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "@/app/components/sidebar";
-import { Tabs, Tab, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Tabs, Tab, Button, Divider } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -10,41 +10,105 @@ export default function SearchUser({ params }: { params: { username: string } })
     const variant = "underlined";
     const router = useRouter();
     const [userdata, setUserData] = useState<any>([]);
+    const [userlogged, setUserLogged] = useState<any>([]);
+    const [isFollowed, setIsFollowed] = useState(false);
     const [imagedata, setImageData] = useState<any>([]);
     const [usercheck, setUserCheck] = useState<any>([]);
     useEffect(() => {
         const token = localStorage.getItem("token");
+
+        //Get Data dari User yang Sedang Diakses
         const fetchDataUser = async () => {
-            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${params.username}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const dataUser = response1.data.data;
-            if (Array.isArray(dataUser)) {
-                const userId = dataUser.map((user) => user.id);
-                setUserData(dataUser[0]);
-                console.log(dataUser[0]);
-                setImageData(dataUser[0].photos);
+            try {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${params.username}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const dataUser = response1.data.data;
+                if (Array.isArray(dataUser) && dataUser.length > 0) {
+                    setUserData(dataUser[0]);
+                    setImageData(dataUser[0].photos);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user data:", error);
             }
         };
-        const checkUser = async () => {
-            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const dataUser = response1.data.data;
-            if (Array.isArray(dataUser)) {
-                const userId = dataUser.map((user) => user.id);
 
-                setUserCheck(dataUser[0]);
-                console.log(dataUser[0]);
+        // Get Data User Yang Sedang Login
+        const checkUser = async () => {
+            try {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const dataUser = response1.data.data;
+                if (Array.isArray(dataUser) && dataUser.length > 0) {
+                    setUserCheck(dataUser[0]);
+                    setUserLogged(dataUser[0].id);
+                }
+            } catch (error) {
+                console.error("Failed to check user:", error);
             }
         };
         fetchDataUser();
         checkUser();
-    }, [])
+    }, [params.username]);
+
+    // Get Data Follower + Cek Apakah User yang Sedang Login Sudah Follow
+    useEffect(() => {
+        if (userdata.id) {
+            const token = localStorage.getItem("token");
+            const fetchUserFollower = async () => {
+                try {
+                    const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${userdata.id}/followers`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    })
+                    const followers = response.data.data;
+                    console.log(response.data.data);
+                    const isUserFollowed = followers.some((follower: any) => follower.id === userlogged);
+                    setIsFollowed(isUserFollowed);
+                } catch (error) {
+                    console.error("Failed :", error);
+                }
+            }
+            fetchUserFollower();
+        }
+    }, [userdata.id]);
+
+    const handleFollowClick = async () => {
+        if (userdata.id) {
+            const fetchUserFollower = async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    let response;
+                    if (isFollowed) {
+                        response = await axios.delete(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${userdata.id}/unfollow`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            }
+                        })
+                        console.log(response.data);
+                    } else {
+                        response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${userdata.id}/follow`, null, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            }
+                        });
+                        const data = response.data;
+                        console.log(data);
+                    }
+                    setIsFollowed(!isFollowed);
+                } catch (error) {
+                    console.error("Failed :", error);
+                }
+            };
+            fetchUserFollower();
+        }
+    };
 
     if (usercheck.username == params.username) {
         router.push('/profile')
@@ -67,20 +131,29 @@ export default function SearchUser({ params }: { params: { username: string } })
                             <h1 className="text-xl font-semibold">{userdata?.fullName}</h1>
                             <h3 className="text-md">@{userdata.username}</h3>
                         </div>
+                        <section className="flex h-10 gap-2">
+                            <Button className="bg-transparent">
+                                <div>
+                                    <p className="text-md font-semibold">{imagedata.length}</p>
+                                    <p className="text-sm">Pengikut</p>
+                                </div>
+                            </Button>
+                            <Divider orientation="vertical" />
+                            <Button className="bg-transparent">
+                                <div>
+                                    <p className="text-md font-semibold">0</p>
+                                    <p className="text-sm">Mengikuti</p>
+                                </div>
+                            </Button>
+                        </section>
                         <section className="flex gap-2">
-                            <Link
-                                href="/"
-                            >
-                                <button className="bg-[#07A081] text-white p-2 rounded-lg">
-                                    Ikuti
-                                </button>
-                            </Link>
-                            <Link
-                                href="/"
-                            >
-                                <button className="border-[#07A081] border-2 text-[#07A081] p-2 rounded-lg">
+                            <Button onClick={handleFollowClick} className={isFollowed ? "border-[#07A081] bg-white rounded-lg border-2 text-[#07A081]" : "text-white rounded-lg bg-[#07A081]"}>
+                                {isFollowed ? "Diikuti" : "Ikuti"}
+                            </Button>
+                            <Link href="/">
+                                <Button className="border-[#07A081] bg-white border-2 text-[#07A081] p-2 rounded-lg">
                                     Kirim Pesan
-                                </button>
+                                </Button>
                             </Link>
                         </section>
                         <Tabs
