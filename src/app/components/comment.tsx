@@ -27,7 +27,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
     const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
     const [commentList, setCommentList] = useState<any[]>([]);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null); // State baru untuk menyimpan ID komentar yang sedang diedit
-    const [editedcomment, setEditedComments] = useState<any>([]);
+
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
@@ -58,10 +58,9 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                         "Authorization": `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-                const commentData = response.data.data.comentars; // Periksa key dari respons data, pastikan sesuai
+                const commentData = response.data.data.comentars;
                 if (Array.isArray(commentData)) {
                     setCommentList(commentData);
-                    setEditedComments(commentData);
                 }
             } catch (error) {
                 console.error("Error fetching comments:", error);
@@ -101,7 +100,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
         try {
             const token = localStorage.getItem('token');
             const payload = {
-                comentar: comments, // Ubah dari editedcomment
+                comentar: comments,
             }
             const commentResponse = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${editingCommentId}/update`, payload, {
                 headers: {
@@ -208,8 +207,8 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                     <ModalHeader className="flex flex-col gap-1">Edit Komentar</ModalHeader>
                     <ModalBody>
                         <Textarea
-                            value={comments} // Ubah dari editedcomment
-                            onChange={(e) => setComments(e.target.value)} // Ubah dari setEditedComments
+                            value={comments}
+                            onChange={(e) => setComments(e.target.value)}
                             label="Edit Komentar"
                             className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
                         />
