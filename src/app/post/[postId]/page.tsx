@@ -158,9 +158,6 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                     }
                   />
                 </Link>
-                {!isOwner && (
-                  <Button className="mt-3 bg-[#07A081] text-white">Follow</Button>
-                )}
               </div>
 
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
