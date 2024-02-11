@@ -43,7 +43,7 @@ export default function Profile() {
       fetchData2();
 
       const fetchData3 = async () => {
-        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/albums/users/${userdata.id}`, {
+        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
