@@ -2,7 +2,7 @@
 import Sidebar from "@/app/components/sidebar";
 import { Tabs, Tab } from "@nextui-org/react";
 import Link from "next/link";
-import { MdError } from "react-icons/md";
+import PhotoTab from "../components/phototab";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Divider, User } from "@nextui-org/react";
@@ -14,7 +14,6 @@ export default function Profile() {
   const [followerlength, setFollowerLength] = useState<any>([]);
   const [following, setFollowing] = useState<any>([]);
   const [followinglength, setFollowingLength] = useState<any>([]);
-  const [imagedata, setImageData] = useState<any>([]);
   const [albumdata, setAlbumData] = useState<any>([]);
   const [followerModalOpen, setFollowerModalOpen] = useState(false);
   const [followingModalOpen, setFollowingModalOpen] = useState(false);
@@ -41,17 +40,6 @@ export default function Profile() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (userdata.id) {
-      const fetchData2 = async () => {
-        const response2 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/users/${userdata.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const dataPhoto = response2.data.data;
-        setImageData(dataPhoto);
-      };
-      fetchData2();
-
       const fetchData3 = async () => {
         const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
           headers: {
@@ -228,25 +216,7 @@ export default function Profile() {
                 aria-label="Options"
               >
                 <Tab key="post" title="Post">
-                  {imagedata.length === 0 ? (
-                    <p className="text-gray-500">Kamu belum mengunggah foto apapun.</p>
-                  ) : (
-                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                      {imagedata.map((image: any, index: any) => {
-                        return (
-                          <Link href={`/post/${image.id}`} key={index}>
-                            <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
-                              <img
-                                src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
-                                alt=""
-                                className="rounded-md mb-2"
-                              />
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
+                  <PhotoTab/>
                 </Tab>
                 <Tab key="album" title="Album">
                   {albumdata.length === 0 ? (
