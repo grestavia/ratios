@@ -1,16 +1,25 @@
 "use client";
 import Sidebar from "@/app/components/sidebar";
-import { Tabs, Tab, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Tabs, Tab } from "@nextui-org/react";
 import Link from "next/link";
+import { MdError } from "react-icons/md";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
+import { motion } from "framer-motion";
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Divider, User } from "@nextui-org/react";
 import axios from "axios";
 
 export default function Profile() {
   const [userdata, setUserData] = useState<any>([]);
+  const [followers, setFollowers] = useState<any>([]);
+  const [followerlength, setFollowerLength] = useState<any>([]);
+  const [following, setFollowing] = useState<any>([]);
+  const [followinglength, setFollowingLength] = useState<any>([]);
   const [imagedata, setImageData] = useState<any>([]);
   const [albumdata, setAlbumData] = useState<any>([]);
+  const [followerModalOpen, setFollowerModalOpen] = useState(false);
+  const [followingModalOpen, setFollowingModalOpen] = useState(false);
 
+  //Get Data dari User yang Sedang Diakses
   useEffect(() => {
     const token = localStorage.getItem("token");
     const fetchData1 = async () => {
@@ -28,6 +37,7 @@ export default function Profile() {
     fetchData1();
   }, []);
 
+  //Get Data Photo yang Dipost User
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (userdata.id) {
@@ -55,6 +65,49 @@ export default function Profile() {
     }
   }, [userdata]);
 
+  useEffect(() => {
+    if (userdata.id) {
+      const token = localStorage.getItem("token");
+      const fetchUserFollower = async () => {
+        try {
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/followers`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          })
+          const followers = response.data.data;
+          console.log(followers);
+          if (Array.isArray(followers)) {
+            setFollowers(followers);
+          }
+          setFollowerLength(followers.length);
+        } catch (error) {
+          console.error("Failed :", error);
+        }
+      }
+      fetchUserFollower();
+
+      const fetchUserFollowing = async () => {
+        try {
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/following`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          })
+          console.log(response.data.data);
+          const following = response.data.data;
+          if (Array.isArray(following)) {
+            setFollowing(following);
+          }
+          setFollowingLength(response.data.data.length);
+        } catch (error) {
+          console.error("Failed :", error);
+        }
+      }
+      fetchUserFollowing();
+    }
+  }, [userdata.id]);
+
   const variant = "underlined";
 
   return (
@@ -76,6 +129,89 @@ export default function Profile() {
                 <h1 className="text-xl font-semibold">{userdata?.fullName}</h1>
                 <h3 className="text-md">@{userdata.username}</h3>
               </div>
+              <section className="flex h-10 gap-2">
+                <Button onClick={() => setFollowerModalOpen(true)} className="bg-transparent">
+                  <div>
+                    <p className="text-md font-semibold">{followerlength}</p>
+                    <p className="text-sm">Pengikut</p>
+                  </div>
+                </Button>
+                <Modal
+                  isOpen={followerModalOpen}
+                  scrollBehavior={"inside"}
+                  backdrop={"blur"}
+                  onClose={() => setFollowerModalOpen(false)}
+                >
+                  <ModalContent>
+                    <>
+                      <ModalHeader className="flex flex-col gap-1">
+                        Pengikut
+                      </ModalHeader>
+                      <ModalBody>
+                        {followers.map((follower: any) => (
+                          <>
+                            <Link href={`/profile/${follower.username}`}>
+                              <Button className="py-7 px-2 bg-transparent flex justify-start">
+                                <User
+                                  name={follower.fullName}
+                                  description={<p>@{follower.username}</p>}
+                                  avatarProps={{
+                                    src: follower.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${follower.photoUrl}`,
+                                  }}
+                                />
+                              </Button>
+                            </Link>
+                            <hr />
+                          </>
+                        ))}
+                      </ModalBody>
+                      <ModalFooter>
+                      </ModalFooter>
+                    </>
+                  </ModalContent>
+                </Modal>
+                <Divider orientation="vertical" />
+                <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">
+                  <div>
+                    <p className="text-md font-semibold">{ followinglength }</p>
+                    <p className="text-sm">Mengikuti</p>
+                  </div>
+                </Button>
+                <Modal
+                  isOpen={followingModalOpen}
+                  scrollBehavior={"inside"}
+                  backdrop={"blur"}
+                  onClose={() => setFollowingModalOpen(false)}
+                >
+                  <ModalContent>
+                    <>
+                      <ModalHeader className="flex flex-col gap-1">
+                        Mengikuti
+                      </ModalHeader>
+                      <ModalBody>
+                      {following.map((followin: any) => (
+                          <>
+                            <Link href={`/profile/${followin.username}`}>
+                              <Button className="py-7 px-2 bg-transparent flex justify-start">
+                                <User
+                                  name={followin.fullName}
+                                  description={<p>@{followin.username}</p>}
+                                  avatarProps={{
+                                    src: followin.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${followin.photoUrl}`,
+                                  }}
+                                />
+                              </Button>
+                            </Link>
+                            <hr />
+                          </>
+                        ))}
+                      </ModalBody>
+                      <ModalFooter>
+                      </ModalFooter>
+                    </>
+                  </ModalContent>
+                </Modal>
+              </section>
               <section>
                 <Link
                   href="/profile/edit"
