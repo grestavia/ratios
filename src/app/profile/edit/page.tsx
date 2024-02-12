@@ -1,16 +1,20 @@
 "use client";
 import Sidebar from "@/app/components/sidebar";
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button } from "@nextui-org/react"; 
+import { MdError } from "react-icons/md";
+import { Button } from "@nextui-org/react";
 import { Badge, Input } from "@nextui-org/react";
+import { motion } from "framer-motion";
 import Alert from "@mui/material/Alert";
 import { useRouter } from "next/navigation";
 
 export default function EditProfile() {
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
   const [photoplaceholder, setPhotoPlaceholder] = useState<string | null>(null);
   const [sucessAlert, setSucessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
 
   interface FormData {
@@ -70,8 +74,17 @@ export default function EditProfile() {
       console.log("Photo uploaded successfully:", response.data);
       router.push("/profile");
       setSucessAlert(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading photo:", error);
+      setErrorAlert(true);
+      setErrorMessage(
+        error.response.data.errors.messages
+          .map((item: { message: string }) => item.message)
+          .join(" dan ")
+      );
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 3000);
     }
   };
 
@@ -103,15 +116,26 @@ export default function EditProfile() {
 
   return (
     <>
-    {sucessAlert && (
-      <Alert
-        variant="filled"
-        className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
-        severity="success"
-      >
-        Profil Berhasil Diperbarui
-      </Alert>
-    )}
+      {sucessAlert && (
+        <Alert
+          variant="filled"
+          className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+          severity="success"
+        >
+          Profil Berhasil Diperbarui
+        </Alert>
+      )}
+      {errorAlert && (
+        <>
+          <Alert
+            variant="filled"
+            className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
+        </>
+      )}
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
