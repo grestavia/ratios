@@ -3,8 +3,8 @@ import Sidebar from "@/app/components/sidebar";
 import { Tabs, Tab } from "@nextui-org/react";
 import Link from "next/link";
 import PhotoTab from "../components/phototab";
+import AlbumTab from "../components/albumtab";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Divider, User } from "@nextui-org/react";
 import axios from "axios";
 
@@ -14,7 +14,6 @@ export default function Profile() {
   const [followerlength, setFollowerLength] = useState<any>([]);
   const [following, setFollowing] = useState<any>([]);
   const [followinglength, setFollowingLength] = useState<any>([]);
-  const [albumdata, setAlbumData] = useState<any>([]);
   const [followerModalOpen, setFollowerModalOpen] = useState(false);
   const [followingModalOpen, setFollowingModalOpen] = useState(false);
 
@@ -37,21 +36,7 @@ export default function Profile() {
   }, []);
 
   //Get Data Photo yang Dipost User
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (userdata.id) {
-      const fetchData3 = async () => {
-        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        const dataAlbum = response3.data.data;
-        setAlbumData(dataAlbum);
-      }
-      fetchData3();
-    }
-  }, [userdata]);
+  
 
   useEffect(() => {
     if (userdata.id) {
@@ -219,19 +204,7 @@ export default function Profile() {
                   <PhotoTab/>
                 </Tab>
                 <Tab key="album" title="Album">
-                  {albumdata.length === 0 ? (
-                    <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
-                  ) : (
-                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                      {albumdata.map((album: any, index: any) => {
-                        return (
-                          <Link href={`/album/${album.id}`} key={index}>
-                            <h1 key={index}>{album.title}</h1>
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
+                  <AlbumTab />
                 </Tab>
               </Tabs>
             </div>
