@@ -23,7 +23,7 @@ export default function Header() {
       if (token) {
         setJWT(token);
         const response = await axios.get(
-          process.env.NEXT_PUBLIC_API_RATIO + "/users/account",
+          process.env.NEXT_PUBLIC_API_RATIO + "/users",
           {
             headers: {
               Authorization: `Bearer ${token}`,

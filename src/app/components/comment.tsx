@@ -34,7 +34,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
         // Fungsi untuk mengambil data pengguna yang sudah login
         const fetchDataUser = async () => {
             const token = localStorage.getItem("token");
-            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -151,11 +151,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                             <Link href={`/profile/${komentar.user.username}`}>
                                 <User
                                     name={komentar.user.fullName}
-                                    description={
-                                        <p>
-                                            {formatRelative(subDays(new Date(komentar.user.createdAt), 3), new Date(), { locale: id })} {/* Ubah format tanggal di sini */}
-                                        </p>
-                                    }
+                                    description={komentar.user.username}
                                     avatarProps={{
                                         src: komentar.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${komentar.user.photoUrl}`,
                                         size: "sm"

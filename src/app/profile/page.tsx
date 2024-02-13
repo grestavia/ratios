@@ -21,7 +21,7 @@ export default function Profile() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const fetchData1 = async () => {
-      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,8 +36,6 @@ export default function Profile() {
   }, []);
 
   //Get Data Photo yang Dipost User
-  
-
   useEffect(() => {
     if (userdata.id) {
       const token = localStorage.getItem("token");

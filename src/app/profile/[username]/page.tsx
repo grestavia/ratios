@@ -24,7 +24,7 @@ export default function SearchUser({ params }: { params: { username: string } })
         //Get Data dari User yang Sedang Diakses
         const fetchDataUser = async () => {
             try {
-                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account/${params.username}`, {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${params.username}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -42,7 +42,7 @@ export default function SearchUser({ params }: { params: { username: string } })
         // Get Data User Yang Sedang Login
         const checkUser = async () => {
             try {
-                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/account`, {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

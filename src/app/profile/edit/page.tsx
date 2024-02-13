@@ -62,7 +62,7 @@ export default function EditProfile() {
     }
     try {
       const response = await axios.put(
-        process.env.NEXT_PUBLIC_API_RATIO + "/users/account/profile",
+        process.env.NEXT_PUBLIC_API_RATIO + "/users/profile",
         payload,
         {
           headers: {
@@ -92,7 +92,7 @@ export default function EditProfile() {
     const token = localStorage.getItem("token");
     const fetchUserData = async () => {
       const responseUser = await axios.get(
-        process.env.NEXT_PUBLIC_API_RATIO + `/users/account`,
+        process.env.NEXT_PUBLIC_API_RATIO + `/users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
