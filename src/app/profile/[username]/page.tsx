@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import { Tabs, User, Tab, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalProps, Button, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

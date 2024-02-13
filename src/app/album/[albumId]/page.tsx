@@ -1,5 +1,5 @@
 'use client'
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Link from "next/link";

@@ -1,9 +1,9 @@
 "use client";
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import { Tabs, Tab } from "@nextui-org/react";
 import Link from "next/link";
-import PhotoTab from "../components/phototab";
-import AlbumTab from "../components/albumtab";
+import PhotoTab from "../components/profile/phototab";
+import AlbumTab from "../components/profile/albumtab";
 import { useEffect, useState } from "react";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Divider, User } from "@nextui-org/react";
 import axios from "axios";

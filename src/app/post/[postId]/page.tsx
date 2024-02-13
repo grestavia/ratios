@@ -1,5 +1,5 @@
 "use client";
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import { User } from "@nextui-org/react";
 import {
   Modal,
@@ -15,7 +15,9 @@ import { useState } from "react";
 import { MdFavoriteBorder, MdLibraryAdd, MdFavorite, MdArrowUpward } from "react-icons/md";
 import { useEffect } from "react";
 import axios from "axios";
-import Comment from "@/app/components/comment";
+import Comment from "@/app/components/post/comment";
+import DetailPostHeader from "@/app/components/post/detailpostheader";
+import DonationModal from "@/app/components/post/donationmodal";
 
 export default function DetailPost({ params }: { params: { postId: string } }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -150,27 +152,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
               />
             </div>
             <div className="w-full p-3 md:p-5 flex flex-col">
-              <h1 className="text-xl md:text-3xl font-semibold">{post?.data.title}</h1>
-              <p className="md:text-md text-sm">{post?.data.description}</p>
-              <div className="flex flex-row justify-between items-center">
-                <Link href={`/profile/${post?.data.user.username}`}>
-                  <User
-                    className="md:mt-5 mt-3 justify-start"
-                    name={post?.data.user.fullName}
-                    description={
-                      <p>
-                        @{post?.data.user.username}
-                      </p>
-                    }
-                    avatarProps={
-                      {
-                        src: post?.data.user.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${post.data.user.photoUrl}`
-                      }
-                    }
-                  />
-                </Link>
-              </div>
-
+              <DetailPostHeader post={post} />
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
                 <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
                 <Button className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
@@ -191,57 +173,15 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                   >
                     Kirim Donasi
                   </Button>
-                  <Modal
-                    className="rounded-lg"
+                  <DonationModal
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
-                  >
-                    <ModalContent>
-                      {(onClose) => (
-                        <form onSubmit={handleSubmit}>
-                          <ModalHeader className="flex flex-col gap-1">
-                            Beri Donasi
-                          </ModalHeader>
-                          <ModalBody className="gap-0">
-                            <hr />
-                            <p className="mt-2 mb-2">
-                              Masukkan nominal yang ingin Anda donasikan :
-                            </p>
-                            <input
-                              type="number"
-                              name=""
-                              placeholder="Rp. 5.000"
-                              className={`w-full border-${isInvalidInput ? "red" : "#07A081"
-                                } rounded-md border-2 p-2`}
-                              id=""
-                              onChange={handleInputChange}
-                            />
-                            {isInvalidInput && (
-                              <p className="text-red-500">
-                                Nominal Donasi Minimal Rp. 5.000
-                              </p>
-                            )}
-                            <div className="flex flex-col gap-0.5">
-                              <p className="mt-3">
-                                Subtotal: Rp. {formatNumber(inputValue)}
-                              </p>
-                              <p>Admin Fee: Rp. 1.000</p>
-                              <p>Total: Rp. {formatNumber(inputValue + 1000)}</p>
-                            </div>
-                          </ModalBody>
-                          <ModalFooter>
-                            <input
-                              type="submit"
-                              value="Tarik Dana"
-                              id="submitButton"
-                              className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
-                              disabled={isInvalidInput}
-                            />
-                          </ModalFooter>
-                        </form>
-                      )}
-                    </ModalContent>
-                  </Modal>
+                    handleSubmit={handleSubmit}
+                    handleInputChange={handleInputChange}
+                    isInvalidInput={isInvalidInput}
+                    inputValue={inputValue}
+                    formatNumber={formatNumber}
+                  />
                 </>
               )}
               <Comment postId={params.postId} />

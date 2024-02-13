@@ -1,5 +1,5 @@
 "use client";
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { MdError } from "react-icons/md";

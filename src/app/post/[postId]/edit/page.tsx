@@ -1,5 +1,5 @@
 'use client'
-import Sidebar from "@/app/components/sidebar";
+import Sidebar from "@/app/components/layout/sidebar";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Input, Textarea } from "@nextui-org/react";

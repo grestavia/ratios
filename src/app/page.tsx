@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/layout/sidebar";
 import Link from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
