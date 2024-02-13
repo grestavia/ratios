@@ -26,6 +26,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [isLiked, setIsLiked] = useState(false);
   const [currentUserId, setUserId] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [amountdonation, setAmountDonation] = useState<any>();
 
   // Get Data User Saat Ini
   useEffect(() => {
@@ -70,8 +71,9 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   }, [params, currentUserId]);
 
   // Handler Nilai Input, Validasi
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: any) => {
     const value = Number(e.target.value);
+    setAmountDonation(value + 1000);
     const isInvalid = value < 5000;
     setInputValue(value);
     setIsInvalidInput(isInvalid);
@@ -89,8 +91,24 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   };
 
   // Handler Submit Form
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const payload = {
+      amount: amountdonation,
+      orderId: params.postId
+    }
+    const token = localStorage.getItem('token');
+    try {
+      const donation = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/donation/photo`, payload, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      console.log(donation.data);
+      window.open(donation.data.data.redirectUrl);
+    } catch (error) {
+      console.error("Error submitting donation:", error);
+    }
   };
 
   // Handler Like
