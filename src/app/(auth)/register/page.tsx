@@ -161,6 +161,7 @@ export default function Register() {
                   label="Password"
                   name="password"
                   isRequired
+                  minLength={8}
                   onChange={handleInputChange}
                   variant="bordered"
                   endContent={
