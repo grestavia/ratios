@@ -3,8 +3,13 @@ import Sidebar from "@/app/components/layout/sidebar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MdMoreVert } from "react-icons/md";
-import { Button } from "@nextui-org/react";
+import { MdMoreVert, MdEdit, MdDelete } from "react-icons/md";
+import {
+    Button, Dropdown,
+    DropdownTrigger,
+    DropdownMenu,
+    DropdownItem
+} from "@nextui-org/react";
 import Image from "next/image";
 
 export default function Album({ params }: { params: { albumId: string } }) {
@@ -60,11 +65,21 @@ export default function Album({ params }: { params: { albumId: string } }) {
                                 <h3 className="text-sm">{albumdata.description}</h3>
                             </section>
                             {isOwner ? (
-                                <section>
-                                    <Button className="min-w-0 bg-transparent">
-                                        <MdMoreVert size={20} />
-                                    </Button>
-                                </section>
+                                <>
+                                    <Dropdown>
+                                        <DropdownTrigger>
+                                            <Button className="min-w-0 bg-transparent">
+                                                <MdMoreVert size={20} />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu aria-label="Static Actions">
+                                            <DropdownItem startContent={<MdEdit />} key="new">Edit Album</DropdownItem>
+                                            <DropdownItem startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
+                                                Hapus Album
+                                            </DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </>
                             ) : (
                                 <></>
                             )}
