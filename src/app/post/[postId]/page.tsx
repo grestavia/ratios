@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  useDisclosure,
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -18,9 +17,9 @@ import axios from "axios";
 import Comment from "@/app/components/post/comment";
 import DetailPostHeader from "@/app/components/post/detailpostheader";
 import DonationModal from "@/app/components/post/donationmodal";
+import AlbumModal from "@/app/components/post/addtoalbum";
 
 export default function DetailPost({ params }: { params: { postId: string } }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [inputValue, setInputValue] = useState(0);
   const [isInvalidInput, setIsInvalidInput] = useState(false);
   const [post, setPost] = useState<{ data?: any } | null>(null);
@@ -29,6 +28,8 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [currentUserId, setUserId] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [amountdonation, setAmountDonation] = useState<any>();
+  const [donationmodal, setDonationModal] = useState(false);
+  const [albummodal, setAlbumModal] = useState(false);
 
   // Get Data User Saat Ini
   useEffect(() => {
@@ -155,7 +156,24 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
               <DetailPostHeader post={post} />
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
                 <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
-                <Button className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
+                <Button onPress={() => setAlbumModal(true)} className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
+                <AlbumModal isOpen={albummodal} onClose={() => setAlbumModal(false)} post={post}/>
+                {/* <Modal className="rounded-lg" isOpen={albummodal} onClose={() => setAlbumModal(false)} >
+                  <ModalContent>
+                      <ModalHeader className="flex flex-col gap-1">Album</ModalHeader>
+                      <ModalBody className="gap-0">
+                        <hr />
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          type="submit"
+                          id="submitButton"
+                          className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
+                          disabled={isInvalidInput}
+                        >Tarik Dana</Button>
+                      </ModalFooter>
+                  </ModalContent>
+                </Modal> */}
               </div>
               {isOwner ? (
                 <>
@@ -168,14 +186,14 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
               ) : (
                 <>
                   <Button
-                    onClick={onOpen}
+                    onPress={() => setDonationModal(true)}
                     className="w-full mt-3 md:w-auto whitespace-nowrap rounded-lg p-2 bg-[#07A081] text-white border-1"
                   >
                     Kirim Donasi
                   </Button>
                   <DonationModal
-                    isOpen={isOpen}
-                    onOpenChange={onOpenChange}
+                    isOpen={donationmodal}
+                    onClose={() => setDonationModal(false)}
                     handleSubmit={handleSubmit}
                     handleInputChange={handleInputChange}
                     isInvalidInput={isInvalidInput}
