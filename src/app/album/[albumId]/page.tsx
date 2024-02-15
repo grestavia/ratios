@@ -26,8 +26,8 @@ export default function Album({ params }: { params: { albumId: string } }) {
                 }
             })
             const dataAlbum = response.data.data;
-            const photolist = dataAlbum.photos;
-            console.log(dataAlbum);
+            const photolist = dataAlbum[0].photos;
+            console.log(photolist);
             setAlbumData(dataAlbum[0]);
             if (Array.isArray(photolist)) {
                 const imageIds = photolist.map(image => image.id);
@@ -43,7 +43,6 @@ export default function Album({ params }: { params: { albumId: string } }) {
                 }
             });
             const dataUser = response.data.data;
-            console.log(dataUser);
             setUserData(dataUser[0]);
         }
         getUser();
@@ -99,7 +98,7 @@ export default function Album({ params }: { params: { albumId: string } }) {
                                     return (
                                         <Link href={`/post/${image.id}`} key={index}>
                                             <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
-                                                <Image
+                                                <img
                                                     src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
                                                     className="rounded-md mb-2"
                                                     alt=""
