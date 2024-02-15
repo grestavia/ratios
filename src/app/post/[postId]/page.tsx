@@ -23,9 +23,10 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [inputValue, setInputValue] = useState(0);
   const [isInvalidInput, setIsInvalidInput] = useState(false);
   const [post, setPost] = useState<{ data?: any } | null>(null);
+  const [albums, setAlbums] = useState<any[]>([]);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [currentUserId, setUserId] = useState<any>([]);
+  const [currentUserId, setUserId] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [amountdonation, setAmountDonation] = useState<any>();
   const [donationmodal, setDonationModal] = useState(false);
@@ -71,6 +72,25 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
       }
     };
     fetchPost();
+
+    if (currentUserId) {
+      const fetchAlbum = async () => {
+        try {
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${currentUserId}/albums`, 
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          }
+          );
+          setAlbums(response.data.data);
+          console.log(response.data.data);
+        } catch (error) {
+          console.error("Error fetching album:", error);
+        }
+      };
+      fetchAlbum();
+    }
   }, [params, currentUserId]);
 
   // Handler Nilai Input, Validasi
@@ -157,23 +177,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
                 <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
                 <Button onPress={() => setAlbumModal(true)} className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
-                <AlbumModal isOpen={albummodal} onClose={() => setAlbumModal(false)} post={post}/>
-                {/* <Modal className="rounded-lg" isOpen={albummodal} onClose={() => setAlbumModal(false)} >
-                  <ModalContent>
-                      <ModalHeader className="flex flex-col gap-1">Album</ModalHeader>
-                      <ModalBody className="gap-0">
-                        <hr />
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          type="submit"
-                          id="submitButton"
-                          className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
-                          disabled={isInvalidInput}
-                        >Tarik Dana</Button>
-                      </ModalFooter>
-                  </ModalContent>
-                </Modal> */}
+                <AlbumModal isOpen={albummodal} photo={params.postId} data={albums} onClose={() => setAlbumModal(false)} post={post}/>
               </div>
               {isOwner ? (
                 <>
