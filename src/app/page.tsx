@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos", {
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos?query=", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         }
@@ -32,7 +32,7 @@ export default function Home() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos?title=${search}`, {
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos?query=${search}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         }
