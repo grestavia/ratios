@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import { useState, FormEvent, useEffect } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
@@ -23,19 +24,16 @@ export default function Login() {
     email: "",
     password: "",
   });
-  const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitFormData = async (e: any) => {
+    e.preventDefault();
 
-    const response = await fetch(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/login", new URLSearchParams(formData), {
     });
 
-    const data = await response.json();
+    const data = response.data;
     console.log(data);
+    router.push('/')
+    localStorage.setItem("token", data.data.token)
     if (data.status === 400) {
       setErrorAlert(true);
       setErrorMessage(
@@ -46,9 +44,6 @@ export default function Login() {
       setTimeout(() => {
         setErrorAlert(false);
       }, 3000);
-    } else if (response.ok) {
-      localStorage.setItem("token", data.data.token)
-      router.push('/')
     }
   };
 

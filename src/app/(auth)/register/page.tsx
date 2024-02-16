@@ -13,6 +13,7 @@ import {
 import { useState, FormEvent, useEffect } from "react";
 import Alert from "@mui/material/Alert";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Register() {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
@@ -46,19 +47,15 @@ export default function Register() {
   const [errorAlert, setErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const submitFormData = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitFormData = async (e: any) => {
+    e.preventDefault();
 
-    const response = await fetch(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
+    const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/register", new URLSearchParams(formData), {
     });
 
-    const data = await response.json();
+    const data = response.data;
     console.log(data);
+    router.push("/login");
     if (data.status === 400) {
       setErrorAlert(true);
       setErrorMessage(
@@ -70,8 +67,6 @@ export default function Register() {
       setTimeout(() => {
         setErrorAlert(false);
       }, 3000);
-    } else if (response.ok) {
-      router.push("/login");
     }
   };
 
