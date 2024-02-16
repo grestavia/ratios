@@ -11,6 +11,7 @@ import axios from "axios";
 export default function Profile() {
   const [userdata, setUserData] = useState<any>([]);
   const [followers, setFollowers] = useState<any>([]);
+  const [albumdata, setAlbumData] = useState<any>([]);
   const [followerlength, setFollowerLength] = useState<any>([]);
   const [following, setFollowing] = useState<any>([]);
   const [followinglength, setFollowingLength] = useState<any>([]);
@@ -34,6 +35,23 @@ export default function Profile() {
     };
     fetchData1();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (userdata.id) {
+        const fetchData3 = async () => {
+            const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            const dataAlbum = response3.data.data;
+            console.log(dataAlbum);
+            setAlbumData(dataAlbum);
+        }
+        fetchData3();
+    }
+}, [userdata]);
 
   //Get Data Photo yang Dipost User
   useEffect(() => {
@@ -86,7 +104,7 @@ export default function Profile() {
       <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
-          <div className="flex items-center pt-3 md:pt-10 w-full">
+          <div className="flex justify-center items-center pt-3 flex-col md:pt-10 w-full">
             <div className="profile mx-auto flex gap-5 flex-col items-center">
               <img
                 src={
@@ -144,7 +162,7 @@ export default function Profile() {
                 <Divider orientation="vertical" />
                 <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">
                   <div>
-                    <p className="text-md font-semibold">{ followinglength }</p>
+                    <p className="text-md font-semibold">{followinglength}</p>
                     <p className="text-sm">Mengikuti</p>
                   </div>
                 </Button>
@@ -160,7 +178,7 @@ export default function Profile() {
                         Mengikuti
                       </ModalHeader>
                       <ModalBody>
-                      {following.map((followin: any) => (
+                        {following.map((followin: any) => (
                           <>
                             <Link href={`/profile/${followin.username}`}>
                               <Button className="py-7 px-2 bg-transparent flex justify-start">
@@ -192,19 +210,22 @@ export default function Profile() {
                   </Button>
                 </Link>
               </section>
-              <Tabs
-                size="md"
-                key={variant}
-                variant={variant}
-                aria-label="Options"
-              >
-                <Tab key="post" title="Post">
-                  <PhotoTab/>
-                </Tab>
-                <Tab key="album" title="Album">
-                  <AlbumTab />
-                </Tab>
-              </Tabs>
+            </div>
+            <div className="w-full flex flex-col pt-3 items-center">
+            <Tabs
+              size="md"
+              key={variant}
+              variant={variant}
+              
+              aria-label="Options"
+            >
+              <Tab key="post" title="Post">
+                <PhotoTab />
+              </Tab>
+              <Tab key="album" className="w-full" title="Album">
+                <AlbumTab data={albumdata} />
+              </Tab>
+            </Tabs>
             </div>
           </div>
         </div>

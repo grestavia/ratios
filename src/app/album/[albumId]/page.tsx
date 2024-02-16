@@ -8,14 +8,18 @@ import {
     Button, Dropdown,
     DropdownTrigger,
     DropdownMenu,
-    DropdownItem
+    DropdownItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 } from "@nextui-org/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Album({ params }: { params: { albumId: string } }) {
     const [albumdata, setAlbumData] = useState<any>([]);
     const [imagespath, setImagesPath] = useState<any[]>([]);
     const [userdata, setUserData] = useState<any>([]);
+
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -26,9 +30,9 @@ export default function Album({ params }: { params: { albumId: string } }) {
                 }
             })
             const dataAlbum = response.data.data;
-            const photolist = dataAlbum[0].photos;
-            console.log(photolist);
-            setAlbumData(dataAlbum[0]);
+            const photolist = dataAlbum.photos;
+            console.log(dataAlbum);
+            setAlbumData(dataAlbum);
             if (Array.isArray(photolist)) {
                 const imageIds = photolist.map(image => image.id);
                 setImagesPath(photolist);
@@ -47,6 +51,17 @@ export default function Album({ params }: { params: { albumId: string } }) {
         }
         getUser();
     }, [])
+
+    const handledeletealbum = async () => {
+        const token = localStorage.getItem("token");
+        const response = await axios.delete(process.env.NEXT_PUBLIC_API_RATIO + `/albums/${params.albumId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        console.log(response.data);
+        router.push('/profile')
+    }
 
     const isOwner = userdata.id === albumdata.userId
 
@@ -73,7 +88,7 @@ export default function Album({ params }: { params: { albumId: string } }) {
                                         </DropdownTrigger>
                                         <DropdownMenu aria-label="Static Actions">
                                             <DropdownItem startContent={<MdEdit />} key="new">Edit Album</DropdownItem>
-                                            <DropdownItem startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
+                                            <DropdownItem onPress={onOpen} startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
                                                 Hapus Album
                                             </DropdownItem>
                                         </DropdownMenu>
@@ -113,6 +128,30 @@ export default function Album({ params }: { params: { albumId: string } }) {
                     </div>
                 </div>
             </div>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalBody>
+                <p> 
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Batal
+                </Button>
+                <Button color="danger" onPress={handledeletealbum}>
+                  Hapus
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
         </>
     );
 }

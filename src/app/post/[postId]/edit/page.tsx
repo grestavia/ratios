@@ -39,7 +39,7 @@ export default function EditPost({ params }: { params: { postId: string } }) {
             description: photoData.description,
         }
         try {
-            const response = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, payload, {
+            const response = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, new URLSearchParams(payload), {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 },

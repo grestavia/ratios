@@ -139,7 +139,6 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     try {
       const token = localStorage.getItem('token');
       let response;
-      // Jika Belum Like, Fungsi Tombol Menjadi Post Like
       response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/like`, null, {
         headers: {
           "Authorization": `Bearer ${token}`

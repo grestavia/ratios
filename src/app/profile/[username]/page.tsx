@@ -5,6 +5,7 @@ import Sidebar from "@/app/components/layout/sidebar";
 import { Tabs, User, Tab, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalProps, Button, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AlbumTab from "@/app/components/profile/albumtab";
 
 export default function SearchUser({ params }: { params: { username: string } }) {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function SearchUser({ params }: { params: { username: string } })
     const [isFollowed, setIsFollowed] = useState(false);
     const [imagedata, setImageData] = useState<any>([]);
     const [usercheck, setUserCheck] = useState<any>([]);
+    const [albumdata, setAlbumData] = useState<any>([]);
     const [followers, setFollowers] = useState<any>([]);
     const [followerlength, setFollowerLength] = useState<any>([]);
     const [followerModalOpen, setFollowerModalOpen] = useState(false);
@@ -30,10 +32,8 @@ export default function SearchUser({ params }: { params: { username: string } })
                     },
                 });
                 const dataUser = response1.data.data;
-                if (Array.isArray(dataUser) && dataUser.length > 0) {
-                    setUserData(dataUser[0]);
-                    setImageData(dataUser[0].photos);
-                }
+                setImageData(dataUser.photos);
+                setUserData(dataUser);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }
@@ -87,6 +87,23 @@ export default function SearchUser({ params }: { params: { username: string } })
         }
     }, [userdata.id]);
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (userdata.id) {
+            const fetchData3 = async () => {
+                const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                const dataAlbum = response3.data.data;
+                console.log(dataAlbum);
+                setAlbumData(dataAlbum);
+            }
+            fetchData3();
+        }
+    }, [userdata]);
+
     //Handler Button Follow
     const handleFollowClick = async () => {
         if (userdata.id) {
@@ -129,7 +146,7 @@ export default function SearchUser({ params }: { params: { username: string } })
         <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
             <Sidebar />
             <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
-                <div className="flex items-center pt-3 md:pt-10 w-full">
+                <div className="flex justify-center items-center pt-3 flex-col md:pt-10 w-full">
                     <div className="profile mx-auto flex gap-5 flex-col items-center">
                         <img
                             src={
@@ -165,15 +182,15 @@ export default function SearchUser({ params }: { params: { username: string } })
                                             {followers.map((follower: any) => (
                                                 <>
                                                     <Link href={`/profile/${follower.username}`}>
-                                                    <Button className="py-7 px-2 bg-transparent flex justify-start">
-                                                        <User
-                                                            name={follower.fullName}
-                                                            description={<p>@{follower.username}</p>}
-                                                            avatarProps={{
-                                                                src: follower.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${follower.photoUrl}`,
-                                                            }}
-                                                        />
-                                                    </Button>
+                                                        <Button className="py-7 px-2 bg-transparent flex justify-start">
+                                                            <User
+                                                                name={follower.fullName}
+                                                                description={<p>@{follower.username}</p>}
+                                                                avatarProps={{
+                                                                    src: follower.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${follower.photoUrl}`,
+                                                                }}
+                                                            />
+                                                        </Button>
                                                     </Link>
                                                     <hr />
                                                 </>
@@ -223,10 +240,13 @@ export default function SearchUser({ params }: { params: { username: string } })
                                 </Button>
                             </Link>
                         </section>
+                    </div>
+                    <div className="w-full flex flex-col pt-3 items-center">
                         <Tabs
                             size="md"
                             key={"underlined"}
                             variant={"underlined"}
+
                             aria-label="Options"
                         >
                             <Tab key="post" title="Post">
@@ -250,8 +270,8 @@ export default function SearchUser({ params }: { params: { username: string } })
                                     </div>
                                 )}
                             </Tab>
-                            <Tab key="album" title="Album">
-                                <h1>Album</h1>
+                            <Tab key="album" className="w-full" title="Album">
+                                <AlbumTab data={albumdata} />
                             </Tab>
                         </Tabs>
                     </div>
