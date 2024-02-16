@@ -5,10 +5,7 @@ import axios from "axios";
 export default function AlbumModal({ isOpen, onClose, data, photo }: any) {
 
     const [se, setSe] = useState(false);
-    const [addphoto, setAddPhoto] = useState([]);
-    const [checkedAlbums, setCheckedAlbums] = useState<string[]>([]);
-
-    console.log(checkedAlbums);
+    const [checkedAlbums, setCheckedAlbums] = useState<string[]>([]);   
 
     const handleCheckboxChange = (albumId: string) => {
         setCheckedAlbums(prevCheckedAlbums => {
@@ -24,15 +21,12 @@ export default function AlbumModal({ isOpen, onClose, data, photo }: any) {
         e.preventDefault();
 
         const token = localStorage.getItem('token');
-        const payload = {
-            photoId: photo
-        }
 
         try {
-            // Memanggil API untuk setiap album yang diceklis
-            checkedAlbums.map(async (albumId) => {
+            await Promise.all(checkedAlbums.map(async (albumId) => {
                 const response = await axios.post(
-                    process.env.NEXT_PUBLIC_API_RATIO + `/albums/${albumId}/photos/${photo}`, payload,
+                    `${process.env.NEXT_PUBLIC_API_RATIO}/albums/${albumId}/photos/${photo}`,
+                    null,
                     {
                         headers: {
                             "Authorization": `Bearer ${token}`
@@ -40,15 +34,10 @@ export default function AlbumModal({ isOpen, onClose, data, photo }: any) {
                     }
                 );
                 console.log(response.data);
-            });
-            onClose
-            // Setelah semua panggilan API selesai, lakukan apa yang diperlukan
-            // seperti menutup modal atau memberi umpan balik kepada pengguna.
-
+            }));
+            onClose(); // Pastikan Anda memanggil onClose sebagai fungsi
         } catch (error) {
-            // Tangani kesalahan jika diperlukan.
             console.log(error);
-
         }
     };
 
@@ -65,7 +54,7 @@ export default function AlbumModal({ isOpen, onClose, data, photo }: any) {
                                 <div key={index} className={se ? "flex flex-row rounded-md p-2 justify-between items-center py-2 bg-[#07A081] text-white" : "flex flex-row rounded-md p-2 justify-between items-center py-2 bg-slate-100 border-1"}>
                                     <section className="flex-col flex">
                                         <p className="text-lg font-medium">{album.title}</p>
-                                        <p className="text-clip text-xs">{album.description}</p>
+                                        <p className="truncate whitespace-nowrap text-xs">{album.description}</p>
                                     </section>
                                     <section>
                                         <Checkbox color="success" checked={checkedAlbums.includes(album.id)} onChange={() => handleCheckboxChange(album.id)} value={album.id}></Checkbox>

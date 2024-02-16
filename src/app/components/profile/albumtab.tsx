@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdHideImage } from "react-icons/md";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, Input, useDisclosure } from "@nextui-org/react";
 
-export default function AlbumTab() {
+export default function AlbumTab({data} : any) {
 
     const [albumdata, setAlbumData] = useState<any>([]);
     const [userdata, setUserData] = useState<any>([]);
@@ -28,38 +28,22 @@ export default function AlbumTab() {
         fetchData1();
     }, []);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (userdata.id) {
-            const fetchData3 = async () => {
-                const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-                const dataAlbum = response3.data.data;
-                setAlbumData(dataAlbum);
-            }
-            fetchData3();
-        }
-    }, [userdata]);
-
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const handleNewAlbumSubmit = async (e: any) => {
-        e.preventDefault(); 
+        e.preventDefault();
         const token = localStorage.getItem("token");
         const payload = {
             title: title,
             description: description
         }
         try {
-            const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/albums`, payload, {
+            const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/albums`, new URLSearchParams(payload), {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
-            }); 
-            console.log(response.data);
+            });
+            location.reload();
         } catch (error) {
             console.error(error);
         }
@@ -67,44 +51,69 @@ export default function AlbumTab() {
 
     return (
         <>
-            {albumdata.length === 0 ? (
+            {data.length === 0 ? (
                 <>
                     <div className="flex flex-col items-center gap-3">
-                    <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
-                    <Button startContent={<MdAdd size={20} />} className="bg-[#07A081] text-white" onPress={onOpen}>Buat Album Baru</Button>
-                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-                        <ModalContent>
-                            {(onClose) => (
-                                <>
-                                <form onSubmit={handleNewAlbumSubmit} action="">
-                                    <ModalHeader className="flex flex-col gap-1">Album Baru</ModalHeader>
-                                    <ModalBody>
-                                        <Input onChange={(e) => setTitle(e.target.value)} className="border-2 border-[#07A081] rounded-xl" type="text" label="Judul" name="title" />
-                                        <Textarea onChange={(e) => setDescription(e.target.value)} className="border-2 border-[#07A081] rounded-xl" label="Deskripsi" name="description" />
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <Button className="bg-[#07A081] w-full text-white" type="submit">
-                                            Buat
-                                        </Button>
-                                    </ModalFooter>
-                                    </form>
-                                </>
-                            )}
-                        </ModalContent>
-                    </Modal>
+                        <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
+                        <Button startContent={<MdAdd size={20} />} className="bg-[#07A081] text-white" onPress={onOpen}>Buat Album Baru</Button>
+
                     </div>
                 </>
             ) : (
-                <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                    {albumdata.map((album: any, index: any) => {
-                        return (
-                            <Link href={`/album/${album.id}`} key={index}>
-                                <h1 key={index}>{album.title}</h1>
-                            </Link>
-                        )
-                    })}
-                </div>
+                <>
+                    <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
+                        <div onClick={onOpen} className=" gap-2 border-[3px] flex-col hover:cursor-pointer border-dashed border-[#07A081] hover:scale-[101%] hover:brightness-75 transition ease-in h-auto aspect-square w-full rounded-md flex items-center justify-center">
+                            <MdAdd className="text-[#07A081]" size={30} />
+                            <p className="text-[#07A081]">Buat Album Baru</p>
+                        </div>
+                        {data.map((album: any, index: any) => {
+                            return (
+                                <>
+                                    <Link href={`/album/${album.id}`} key={index}>
+                                        <div className="relative hover:scale-[101%] hover:brightness-75 transition ease-in shadow-inner aspect-square rounded-md items-center justify-center flex flex-col">
+                                            {album.photos[0] ? (
+                                                <>
+                                                <img src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${album.photos[0].locationFile}`} alt="" className="w-full rounded-md h-full object-cover" />
+                                                </>
+                                            ) : (
+                                                <>
+                                                <MdHideImage size={30} />
+                                                <p>Belum Ada Photo</p>
+                                                </>
+                                            )}
+                                            <div className="absolute z-10 bottom-0 left-0 right-0 p-4 text-white">
+                                                <h1 className="text-xl font-bold">{album.title}</h1>
+                                                <p className="truncate text-sm">{album.description}</p>
+                                            </div>
+                                            <div className=" rounded-md absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+                                        </div>
+                                    </Link>
+                                </>
+                            )
+                        })}
+                    </div>
+                </>
             )}
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <form onSubmit={handleNewAlbumSubmit} action="">
+                                <ModalHeader className="flex flex-col gap-1">Album Baru</ModalHeader>
+                                <ModalBody>
+                                    <Input onChange={(e) => setTitle(e.target.value)} className="border-2 border-[#07A081] rounded-xl" type="text" label="Judul" name="title" />
+                                    <Textarea onChange={(e) => setDescription(e.target.value)} className="border-2 border-[#07A081] rounded-xl" label="Deskripsi" name="description" />
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button className="bg-[#07A081] w-full text-white" type="submit">
+                                        Buat
+                                    </Button>
+                                </ModalFooter>
+                            </form>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }
