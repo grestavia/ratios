@@ -80,7 +80,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
             const payload = {
                 comentar: comments,
             }
-            const commentResponse = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${postId}/comentar`, payload, {
+            const commentResponse = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${postId}/comentar`, new URLSearchParams(payload), {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -100,7 +100,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
             const payload = {
                 comentar: comments,
             }
-            const commentResponse = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${editingCommentId}/update`, payload, {
+            const commentResponse = await axios.put(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${editingCommentId}/update`, new URLSearchParams(payload), {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
