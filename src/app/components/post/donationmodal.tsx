@@ -32,7 +32,7 @@ export default function DonationModal({ isOpen, onClose, handleSubmit, handleInp
               id="submitButton"
               className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
               disabled={isInvalidInput}
-            >Tarik Dana</Button>
+            >Kirim Donasi</Button>
           </ModalFooter>
         </form>
       </ModalContent>
