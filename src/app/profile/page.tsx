@@ -6,6 +6,8 @@ import PhotoTab from "../components/profile/phototab";
 import AlbumTab from "../components/profile/albumtab";
 import { useEffect, useState } from "react";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Divider, User } from "@nextui-org/react";
+import Follower from "../components/profile/follower";
+import Following from "../components/profile/following";
 import axios from "axios";
 
 export default function Profile() {
@@ -39,19 +41,19 @@ export default function Profile() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (userdata.id) {
-        const fetchData3 = async () => {
-            const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            const dataAlbum = response3.data.data;
-            console.log(dataAlbum);
-            setAlbumData(dataAlbum);
-        }
-        fetchData3();
+      const fetchData3 = async () => {
+        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const dataAlbum = response3.data.data;
+        console.log(dataAlbum);
+        setAlbumData(dataAlbum);
+      }
+      fetchData3();
     }
-}, [userdata]);
+  }, [userdata]);
 
   //Get Data Photo yang Dipost User
   useEffect(() => {
@@ -125,40 +127,11 @@ export default function Profile() {
                     <p className="text-sm">Pengikut</p>
                   </div>
                 </Button>
-                <Modal
+                <Follower
                   isOpen={followerModalOpen}
-                  scrollBehavior={"inside"}
-                  backdrop={"blur"}
                   onClose={() => setFollowerModalOpen(false)}
-                >
-                  <ModalContent>
-                    <>
-                      <ModalHeader className="flex flex-col gap-1">
-                        Pengikut
-                      </ModalHeader>
-                      <ModalBody>
-                        {followers.map((follower: any) => (
-                          <>
-                            <Link href={`/profile/${follower.username}`}>
-                              <Button className="py-7 px-2 bg-transparent flex justify-start">
-                                <User
-                                  name={follower.fullName}
-                                  description={<p>@{follower.username}</p>}
-                                  avatarProps={{
-                                    src: follower.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${follower.photoUrl}`,
-                                  }}
-                                />
-                              </Button>
-                            </Link>
-                            <hr />
-                          </>
-                        ))}
-                      </ModalBody>
-                      <ModalFooter>
-                      </ModalFooter>
-                    </>
-                  </ModalContent>
-                </Modal>
+                  followers={followers}
+                />
                 <Divider orientation="vertical" />
                 <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">
                   <div>
@@ -166,40 +139,11 @@ export default function Profile() {
                     <p className="text-sm">Mengikuti</p>
                   </div>
                 </Button>
-                <Modal
-                  isOpen={followingModalOpen}
-                  scrollBehavior={"inside"}
-                  backdrop={"blur"}
-                  onClose={() => setFollowingModalOpen(false)}
-                >
-                  <ModalContent>
-                    <>
-                      <ModalHeader className="flex flex-col gap-1">
-                        Mengikuti
-                      </ModalHeader>
-                      <ModalBody>
-                        {following.map((followin: any) => (
-                          <>
-                            <Link href={`/profile/${followin.username}`}>
-                              <Button className="py-7 px-2 bg-transparent flex justify-start">
-                                <User
-                                  name={followin.fullName}
-                                  description={<p>@{followin.username}</p>}
-                                  avatarProps={{
-                                    src: followin.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${followin.photoUrl}`,
-                                  }}
-                                />
-                              </Button>
-                            </Link>
-                            <hr />
-                          </>
-                        ))}
-                      </ModalBody>
-                      <ModalFooter>
-                      </ModalFooter>
-                    </>
-                  </ModalContent>
-                </Modal>
+                <Following
+                            isOpen={followingModalOpen}
+                            onClose={() => setFollowingModalOpen(false)}
+                            following={following}
+                            />
               </section>
               <section>
                 <Link
@@ -212,20 +156,20 @@ export default function Profile() {
               </section>
             </div>
             <div className="w-full flex flex-col pt-3 items-center">
-            <Tabs
-              size="md"
-              key={variant}
-              variant={variant}
-              
-              aria-label="Options"
-            >
-              <Tab key="post" title="Post">
-                <PhotoTab />
-              </Tab>
-              <Tab key="album" className="w-full" title="Album">
-                <AlbumTab user={userdata.username} data={albumdata} />
-              </Tab>
-            </Tabs>
+              <Tabs
+                size="md"
+                key={variant}
+                variant={variant}
+
+                aria-label="Options"
+              >
+                <Tab key="post" title="Post">
+                  <PhotoTab />
+                </Tab>
+                <Tab key="album" className="w-full" title="Album">
+                  <AlbumTab user={userdata.username} data={albumdata} />
+                </Tab>
+              </Tabs>
             </div>
           </div>
         </div>

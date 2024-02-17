@@ -6,6 +6,8 @@ import { Tabs, User, Tab, Divider, Modal, ModalContent, ModalHeader, ModalBody, 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AlbumTab from "@/app/components/profile/albumtab";
+import Follower from "@/app/components/profile/follower";
+import Following from "@/app/components/profile/following";
 
 export default function SearchUser({ params }: { params: { username: string } }) {
     const router = useRouter();
@@ -16,6 +18,8 @@ export default function SearchUser({ params }: { params: { username: string } })
     const [usercheck, setUserCheck] = useState<any>([]);
     const [albumdata, setAlbumData] = useState<any>([]);
     const [followers, setFollowers] = useState<any>([]);
+    const [following, setFollowing] = useState<any>([]);
+    const [followinglength, setFollowingLength] = useState<any>([]);
     const [followerlength, setFollowerLength] = useState<any>([]);
     const [followerModalOpen, setFollowerModalOpen] = useState(false);
     const [followingModalOpen, setFollowingModalOpen] = useState(false);
@@ -84,6 +88,25 @@ export default function SearchUser({ params }: { params: { username: string } })
                 }
             }
             fetchUserFollower();
+
+            const fetchUserFollowing = async () => {
+                try {
+                  const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/following`, {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    }
+                  })
+                  console.log(response.data.data);
+                  const following = response.data.data;
+                  if (Array.isArray(following)) {
+                    setFollowing(following);
+                  }
+                  setFollowingLength(response.data.data.length);
+                } catch (error) {
+                  console.error("Failed :", error);
+                }
+              }
+              fetchUserFollowing();
         }
     }, [userdata.id]);
 
@@ -167,68 +190,23 @@ export default function SearchUser({ params }: { params: { username: string } })
                                     <p className="text-sm">Pengikut</p>
                                 </div>
                             </Button>
-                            <Modal
-                                isOpen={followerModalOpen}
-                                scrollBehavior={"inside"}
-                                backdrop={"blur"}
-                                onClose={() => setFollowerModalOpen(false)}
-                            >
-                                <ModalContent>
-                                    <>
-                                        <ModalHeader className="flex flex-col gap-1">
-                                            Pengikut
-                                        </ModalHeader>
-                                        <ModalBody>
-                                            {followers.map((follower: any) => (
-                                                <>
-                                                    <Link href={`/profile/${follower.username}`}>
-                                                        <Button className="py-7 px-2 bg-transparent flex justify-start">
-                                                            <User
-                                                                name={follower.fullName}
-                                                                description={<p>@{follower.username}</p>}
-                                                                avatarProps={{
-                                                                    src: follower.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${follower.photoUrl}`,
-                                                                }}
-                                                            />
-                                                        </Button>
-                                                    </Link>
-                                                    <hr />
-                                                </>
-                                            ))}
-                                        </ModalBody>
-                                        <ModalFooter>
-                                        </ModalFooter>
-                                    </>
-                                </ModalContent>
-                            </Modal>
+                            <Follower 
+                            isOpen={followerModalOpen}
+                            onClose={() => setFollowerModalOpen(false)}
+                            followers={followers}
+                            />
                             <Divider orientation="vertical" />
                             <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">
                                 <div>
-                                    <p className="text-md font-semibold">0</p>
+                                    <p className="text-md font-semibold">{followinglength}</p>
                                     <p className="text-sm">Mengikuti</p>
                                 </div>
                             </Button>
-                            <Modal
-                                isOpen={followingModalOpen}
-                                scrollBehavior={"inside"}
-                                backdrop={"blur"}
-                                onClose={() => setFollowingModalOpen(false)}
-                            >
-                                <ModalContent>
-                                    <>
-                                        <ModalHeader className="flex flex-col gap-1">
-                                            Mengikuti
-                                        </ModalHeader>
-                                        <ModalBody>
-                                            <p>
-                                                bjir
-                                            </p>
-                                        </ModalBody>
-                                        <ModalFooter>
-                                        </ModalFooter>
-                                    </>
-                                </ModalContent>
-                            </Modal>
+                            <Following
+                            isOpen={followingModalOpen}
+                            onClose={() => setFollowingModalOpen(false)}
+                            following={following}
+                            />
                         </section>
                         <section className="flex gap-2">
                             <Button onClick={handleFollowClick} className={isFollowed ? "border-[#07A081] bg-white rounded-lg border-2 text-[#07A081]" : "text-white rounded-lg bg-[#07A081]"}>
