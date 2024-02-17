@@ -223,7 +223,7 @@ export default function Profile() {
                 <PhotoTab />
               </Tab>
               <Tab key="album" className="w-full" title="Album">
-                <AlbumTab data={albumdata} />
+                <AlbumTab user={userdata.username} data={albumdata} />
               </Tab>
             </Tabs>
             </div>

@@ -271,7 +271,7 @@ export default function SearchUser({ params }: { params: { username: string } })
                                 )}
                             </Tab>
                             <Tab key="album" className="w-full" title="Album">
-                                <AlbumTab data={albumdata} />
+                                <AlbumTab data={albumdata} user={params.username} />
                             </Tab>
                         </Tabs>
                     </div>
