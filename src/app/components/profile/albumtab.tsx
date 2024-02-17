@@ -4,9 +4,8 @@ import Link from "next/link";
 import { MdAdd, MdHideImage } from "react-icons/md";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, Input, useDisclosure } from "@nextui-org/react";
 
-export default function AlbumTab({data} : any) {
+export default function AlbumTab({data, user} : any) {
 
-    const [albumdata, setAlbumData] = useState<any>([]);
     const [userdata, setUserData] = useState<any>([]);
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
@@ -20,6 +19,7 @@ export default function AlbumTab({data} : any) {
                 },
             });
             const dataUser = response1.data.data;
+            console.log(dataUser);
             if (Array.isArray(dataUser)) {
                 const userId = dataUser.map((user) => user.id);
                 setUserData(dataUser[0]);
@@ -52,20 +52,37 @@ export default function AlbumTab({data} : any) {
     return (
         <>
             {data.length === 0 ? (
-                <>
+                userdata.username === user ? (
+                    <>
                     <div className="flex flex-col items-center gap-3">
                         <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
+                        <Button startContent={<MdAdd size={20} />} className="bg-[#07A081] text-white" onPress={onOpen}>Buat Album Baru</Button>
+                    </div>
+                </>
+                ) : (
+                    <>
+                    <div className="flex flex-col items-center gap-3">
+                        <p className="text-gray-500">Pengguna ini belum mengunggah album apapun.</p>
                         <Button startContent={<MdAdd size={20} />} className="bg-[#07A081] text-white" onPress={onOpen}>Buat Album Baru</Button>
 
                     </div>
                 </>
+                )
+                
             ) : (
                 <>
                     <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
-                        <div onClick={onOpen} className=" gap-2 border-[3px] flex-col hover:cursor-pointer border-dashed border-[#07A081] hover:scale-[101%] hover:brightness-75 transition ease-in h-auto aspect-square w-full rounded-md flex items-center justify-center">
+                        {userdata.username === user ? (
+                            <>
+                            <div onClick={onOpen} className=" gap-2 border-[3px] flex-col hover:cursor-pointer border-dashed border-[#07A081] hover:scale-[101%] hover:brightness-75 transition ease-in h-auto aspect-square w-full rounded-md flex items-center justify-center">
                             <MdAdd className="text-[#07A081]" size={30} />
                             <p className="text-[#07A081]">Buat Album Baru</p>
-                        </div>
+                            </div>
+                            </>
+                        ) : (
+                            <>
+                            </>                            
+                        )}
                         {data.map((album: any, index: any) => {
                             return (
                                 <>
