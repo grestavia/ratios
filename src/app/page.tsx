@@ -65,6 +65,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
+                  <p className="text-center mb-5">Hasil Pencarian Terkait "<b>{search}</b>"</p>
                   <div className="lg:columns-4 md:columns-3 columns-2 gap-3">
                   {imagesearchpath.map((image, index) => {
                     return (
