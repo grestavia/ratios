@@ -57,7 +57,7 @@ export default function Profile() {
 
 
       const fetchDataImage = async () => {
-        const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/users/${userdata.id}`, {
+        const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/photos`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -117,7 +117,7 @@ export default function Profile() {
 
   return (
     <>
-      <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+      <div className="flex justify-between pt-20 px-5 lg:px-5">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex justify-center items-center pt-3 flex-col md:pt-10 w-full">
