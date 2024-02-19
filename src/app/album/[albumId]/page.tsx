@@ -67,7 +67,7 @@ export default function Album({ params }: { params: { albumId: string } }) {
 
     return (
         <>
-            <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+            <div className="flex justify-between pt-20 px-5 lg:px-5">
                 <Sidebar />
                 <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
                     <div className="max-w-2xl">
@@ -87,7 +87,7 @@ export default function Album({ params }: { params: { albumId: string } }) {
                                             </Button>
                                         </DropdownTrigger>
                                         <DropdownMenu aria-label="Static Actions">
-                                            <DropdownItem startContent={<MdEdit />} key="new">Edit Album</DropdownItem>
+                                            <DropdownItem startContent={<MdEdit />} key="new"><Link href={`/album/${params.albumId}/edit`}>Edit Profile</Link></DropdownItem>
                                             <DropdownItem onPress={onOpen} startContent={<MdDelete />} key="delete" className="text-danger" color="danger">
                                                 Hapus Album
                                             </DropdownItem>
@@ -132,12 +132,10 @@ export default function Album({ params }: { params: { albumId: string } }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Hapus Album "{albumdata.title}"</ModalHeader>
               <ModalBody>
                 <p> 
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                  Anda yakin ingin menghapus album ini?
                 </p>
               </ModalBody>
               <ModalFooter>

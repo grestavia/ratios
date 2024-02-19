@@ -50,7 +50,7 @@ export default function Wallet() {
 
   return (
     <>
-      <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+      <div className="flex justify-between pt-20 px-5 lg:px-5">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <section className="head pt-2 pl-2 lg:pl-5 flex flex-col gap-0 lg:gap-1">

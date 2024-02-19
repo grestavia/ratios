@@ -160,9 +160,9 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
 
   return (
     <>
-      <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+      <div className="flex justify-between pt-20 px-10">
         <Sidebar />
-        <div className="overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-2 md:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+        <div className="overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden p-2 md:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex flex-col lg:flex-row">
             <div className="w-full">
               <img

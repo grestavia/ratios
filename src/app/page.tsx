@@ -53,7 +53,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+      <div className="flex justify-between pt-20 px-5 lg:px-5">
         <Sidebar />
         {searchpage ? (
           <>

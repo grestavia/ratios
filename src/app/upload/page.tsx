@@ -73,7 +73,7 @@ export default function Upload() {
         Gambar Berhasil di Post
       </Alert>
     )}
-      <div className="flex justify-between pt-20 px-5 lg:pr-10 lg:pl-0">
+      <div className="flex justify-between pt-20 px-5 lg:px-5">
         <Sidebar />
         <div className="konten overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-thumb- w-full overflow-x-hidden p-2 lg:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="max-w-2xl">
