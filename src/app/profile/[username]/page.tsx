@@ -6,6 +6,7 @@ import { Tabs, User, Tab, Divider, Modal, ModalContent, ModalHeader, ModalBody, 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AlbumTab from "@/app/components/profile/albumtab";
+import PhotoTab from "@/app/components/profile/phototab";
 import Follower from "@/app/components/profile/follower";
 import Following from "@/app/components/profile/following";
 
@@ -228,25 +229,7 @@ export default function SearchUser({ params }: { params: { username: string } })
                             aria-label="Options"
                         >
                             <Tab key="post" title="Post">
-                                {imagedata.length === 0 ? (
-                                    <p className="text-gray-500">Pengguna ini belum mengunggah foto apapun.</p>
-                                ) : (
-                                    <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
-                                        {imagedata.map((image: any, index: any) => {
-                                            return (
-                                                <Link href={`/post/${image.id}`} key={index}>
-                                                    <div className="mb-3 hover:brightness-[.80] transform hover:scale-[102%] transition ease-in">
-                                                        <img
-                                                            src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
-                                                            alt=""
-                                                            className="rounded-md mb-2"
-                                                        />
-                                                    </div>
-                                                </Link>
-                                            );
-                                        })}
-                                    </div>
-                                )}
+                            <PhotoTab data={imagedata} />
                             </Tab>
                             <Tab key="album" className="w-full" title="Album">
                                 <AlbumTab data={albumdata} user={params.username} />
