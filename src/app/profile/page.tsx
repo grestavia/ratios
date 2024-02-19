@@ -12,8 +12,9 @@ import axios from "axios";
 
 export default function Profile() {
   const [userdata, setUserData] = useState<any>([]);
-  const [followers, setFollowers] = useState<any>([]);
+  const [imagedata, setImageData] = useState<any>([]);
   const [albumdata, setAlbumData] = useState<any>([]);
+  const [followers, setFollowers] = useState<any>([]);
   const [followerlength, setFollowerLength] = useState<any>([]);
   const [following, setFollowing] = useState<any>([]);
   const [followinglength, setFollowingLength] = useState<any>([]);
@@ -30,6 +31,7 @@ export default function Profile() {
         },
       });
       const dataUser = response1.data.data;
+      console.log(dataUser);
       if (Array.isArray(dataUser)) {
         const userId = dataUser.map((user) => user.id);
         setUserData(dataUser[0]);
@@ -52,10 +54,24 @@ export default function Profile() {
         setAlbumData(dataAlbum);
       }
       fetchData3();
+
+
+      const fetchDataImage = async () => {
+        const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/users/${userdata.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const dataUser = response1.data.data;
+        setImageData(dataUser);
+        console.log(dataUser);
+      };
+      fetchDataImage();
+
     }
   }, [userdata]);
 
-  //Get Data Photo yang Dipost User
+  // Get Follower - FOllowing
   useEffect(() => {
     if (userdata.id) {
       const token = localStorage.getItem("token");
@@ -67,7 +83,6 @@ export default function Profile() {
             }
           })
           const followers = response.data.data;
-          console.log(followers);
           if (Array.isArray(followers)) {
             setFollowers(followers);
           }
@@ -85,7 +100,6 @@ export default function Profile() {
               Authorization: `Bearer ${token}`,
             }
           })
-          console.log(response.data.data);
           const following = response.data.data;
           if (Array.isArray(following)) {
             setFollowing(following);
@@ -140,10 +154,10 @@ export default function Profile() {
                   </div>
                 </Button>
                 <Following
-                            isOpen={followingModalOpen}
-                            onClose={() => setFollowingModalOpen(false)}
-                            following={following}
-                            />
+                  isOpen={followingModalOpen}
+                  onClose={() => setFollowingModalOpen(false)}
+                  following={following}
+                />
               </section>
               <section>
                 <Link
@@ -164,7 +178,7 @@ export default function Profile() {
                 aria-label="Options"
               >
                 <Tab key="post" title="Post">
-                  <PhotoTab />
+                  <PhotoTab data={imagedata} />
                 </Tab>
                 <Tab key="album" className="w-full" title="Album">
                   <AlbumTab user={userdata.username} data={albumdata} />
