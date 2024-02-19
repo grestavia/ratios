@@ -16,9 +16,9 @@ export default function Follower({isOpen, onClose, followers}: any) {
                             Pengikut
                         </ModalHeader>
                         <ModalBody>
-                            {followers.map((follower: any) => (
+                            {followers.map((follower: any, index: any) => (
                                 <>
-                                    <Link href={`/profile/${follower.username}`}>
+                                    <Link key={index} href={`/profile/${follower.username}`}>
                                         <Button className="py-7 px-2 bg-transparent flex justify-start">
                                             <User
                                                 name={follower.fullName}

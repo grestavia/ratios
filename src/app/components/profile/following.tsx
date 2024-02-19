@@ -16,9 +16,9 @@ export default function Following({isOpen, onClose, following}: any) {
                             Mengikuti
                         </ModalHeader>
                         <ModalBody>
-                            {following.map((follower: any) => (
+                            {following.map((follower: any, index: any) => (
                                 <>
-                                    <Link href={`/profile/${follower.username}`}>
+                                    <Link key={index} href={`/profile/${follower.username}`}>
                                         <Button className="py-7 px-2 bg-transparent flex justify-start">
                                             <User
                                                 name={follower.fullName}
