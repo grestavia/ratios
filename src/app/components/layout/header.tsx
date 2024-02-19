@@ -6,16 +6,21 @@ import {
   DropdownMenu,
   DropdownItem,
   dropdownSection,
+  Button,
   DropdownSection
 } from "@nextui-org/react";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { MdLogout, MdOutlinePerson } from "react-icons/md";
+import useSidebarStore from "@/app/useSidebarStore";
 
 export default function Header() {
   const [userdata, setUserData] = useState<any>([]);
   const [jwt, setJWT] = useState("");
+  const [opensidebar, setOpenSidebar] = useState(false);
+
+  const {setSidebar} = useSidebarStore();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -48,9 +53,9 @@ export default function Header() {
   return (
     <div className="header bg-[#F0F4F9] fixed top-0 flex-row w-full flex items-center justify-between p-[2px] md:p-[8px]">
       <div className="flex items-center w-full ml-3 md:ml-5">
-        <div className="p-[12px]">
-          <MenuIcon />
-        </div>
+        <Button className="min-w-0 px-1 bg-transparent" onPress={() => setSidebar()}>
+          <MenuIcon/>
+        </Button>
         <a href="/" className="flex items-center">
           <img
             src="/logo.png"

@@ -2,11 +2,12 @@
 import { useEffect } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link'
+import useSidebarStore from '@/app/useSidebarStore';
 
 export default function Sidebar() {
-
   const router = usePathname();
   const params = useParams();
+  const {sidebar} = useSidebarStore();
   const links = [
     {
       route: "/",
@@ -37,7 +38,7 @@ export default function Sidebar() {
 
   return (
     <>
-    <div className="mx-auto w-full hidden md:flex flex-col justify-between pt-8 md:max-w-[15rem] lg:max-w-[15rem]">
+    <div className={ sidebar ? 'hidden md:flex mx-auto w-full flex-col justify-between pt-8 md:max-w-[15rem] lg:max-w-[15rem]' : "hidden mx-auto w-full flex-col justify-between pt-8 md:max-w-[15rem] lg:max-w-[15rem]"}>
       <ul className="flex flex-col gap-10 items-center w-full px-6">
         {links.map((link, index) => {
           return (        
