@@ -142,7 +142,7 @@ export default function EditProfile() {
           <div className="max-w-2xl">
             <section className="head pt-2 pl-2 lg:pl-5 flex flex-col gap-0 lg:gap-1">
               <h1 className="lg:text-2xl text-md font-medium">Edit Profile</h1>
-              <h3 className="text-xs">Pilih dan Unggah File Pilihan Anda</h3>
+              <h3 className="text-xs">Edit Profile Anda Disini</h3>
             </section>
             <hr className="mt-3" />
             <section className="mt-5">
