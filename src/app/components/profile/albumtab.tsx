@@ -63,8 +63,6 @@ export default function AlbumTab({data, user} : any) {
                     <>
                     <div className="flex flex-col items-center gap-3">
                         <p className="text-gray-500">Pengguna ini belum mengunggah album apapun.</p>
-                        <Button startContent={<MdAdd size={20} />} className="bg-[#07A081] text-white" onPress={onOpen}>Buat Album Baru</Button>
-
                     </div>
                 </>
                 )
@@ -100,7 +98,7 @@ export default function AlbumTab({data, user} : any) {
                                             )}
                                             <div className="absolute z-10 bottom-0 left-0 right-0 p-4 text-white">
                                                 <h1 className="text-xl font-bold">{album.title}</h1>
-                                                <p className="truncate text-sm">{album.description}</p>
+                                                <p className="truncate text-sm">{album.photos.length} Foto</p>
                                             </div>
                                             <div className=" rounded-md absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
                                         </div>
