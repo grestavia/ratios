@@ -11,7 +11,6 @@ import Following from "../components/profile/following";
 import axios from "axios";
 
 export default function Profile() {
-  const [userdata, setUserData] = useState<any>([]);
   const [imagedata, setImageData] = useState<any>([]);
   const [albumdata, setAlbumData] = useState<any>([]);
   const [followers, setFollowers] = useState<any>([]);
@@ -20,64 +19,59 @@ export default function Profile() {
   const [followinglength, setFollowingLength] = useState<any>([]);
   const [followerModalOpen, setFollowerModalOpen] = useState(false);
   const [followingModalOpen, setFollowingModalOpen] = useState(false);
-
-  //Get Data dari User yang Sedang Diakses
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const fetchData1 = async () => {
-      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const dataUser = response1.data.data;
-      console.log(dataUser);
-      if (Array.isArray(dataUser)) {
-        const userId = dataUser.map((user) => user.id);
-        setUserData(dataUser[0]);
-      }
-    };
-    fetchData1();
-  }, []);
+  const [userdata, setUserData] = useState<any>([]);
+  const [userId, setUserId] = useState<any>();
 
   useEffect(() => {
+    const userid = localStorage.getItem("userid"); 
     const token = localStorage.getItem("token");
-    if (userdata.id) {
+    setUserId(userid);
+    if (userId) {
       const fetchData3 = async () => {
-        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/albums`, {
+        const response3 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
         const dataAlbum = response3.data.data;
-        console.log(dataAlbum);
         setAlbumData(dataAlbum);
       }
       fetchData3();
 
+      const fetchUser = async () => {
+        const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const dataUser = response.data.data;
+        console.log(dataUser);
+        setUserData(dataUser);
+      }
+      fetchUser();
 
       const fetchDataImage = async () => {
-        const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/photos`, {
+        const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/photos`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const dataUser = response1.data.data;
-        setImageData(dataUser);
-        console.log(dataUser);
+        const userPhotos = response1.data.data;
+        setImageData(userPhotos);
       };
       fetchDataImage();
 
     }
-  }, [userdata]);
+  }, [userId]);
 
   // Get Follower - FOllowing
   useEffect(() => {
-    if (userdata.id) {
+    const userId = localStorage.getItem("userid");
+    if (userId) {
       const token = localStorage.getItem("token");
       const fetchUserFollower = async () => {
         try {
-          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/followers`, {
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/followers`, {
             headers: {
               Authorization: `Bearer ${token}`,
             }
@@ -95,7 +89,7 @@ export default function Profile() {
 
       const fetchUserFollowing = async () => {
         try {
-          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userdata.id}/following`, {
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/following`, {
             headers: {
               Authorization: `Bearer ${token}`,
             }
@@ -111,7 +105,7 @@ export default function Profile() {
       }
       fetchUserFollowing();
     }
-  }, [userdata.id]);
+  }, [userId]);
 
   const variant = "underlined";
 
@@ -181,7 +175,7 @@ export default function Profile() {
                   <PhotoTab data={imagedata} />
                 </Tab>
                 <Tab key="album" className="w-full" title="Album">
-                  <AlbumTab user={userdata.username} data={albumdata} />
+                  <AlbumTab user={null} data={albumdata} />
                 </Tab>
               </Tabs>
             </div>

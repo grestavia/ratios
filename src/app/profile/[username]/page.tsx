@@ -13,7 +13,6 @@ import Following from "@/app/components/profile/following";
 export default function SearchUser({ params }: { params: { username: string } }) {
     const router = useRouter();
     const [userdata, setUserData] = useState<any>([]);
-    const [userlogged, setUserLogged] = useState<any>([]);
     const [isFollowed, setIsFollowed] = useState(false);
     const [imagedata, setImageData] = useState<any>([]);
     const [usercheck, setUserCheck] = useState<any>([]);
@@ -24,6 +23,8 @@ export default function SearchUser({ params }: { params: { username: string } })
     const [followerlength, setFollowerLength] = useState<any>([]);
     const [followerModalOpen, setFollowerModalOpen] = useState(false);
     const [followingModalOpen, setFollowingModalOpen] = useState(false);
+
+    const userId = localStorage.getItem("userid");
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -48,7 +49,7 @@ export default function SearchUser({ params }: { params: { username: string } })
         // Get Data User Yang Sedang Login
         const checkUser = async () => {
             try {
-                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -56,14 +57,12 @@ export default function SearchUser({ params }: { params: { username: string } })
                 const dataUser = response1.data.data;
                 if (Array.isArray(dataUser) && dataUser.length > 0) {
                     setUserCheck(dataUser[0]);
-                    setUserLogged(dataUser[0].id);
                 }
             } catch (error) {
                 console.error("Failed to check user:", error);
             }
         };
         fetchDataUser();
-        checkUser();
     }, [params.username]);
 
     // Get Data Follower + Cek Apakah User yang Sedang Login Sudah Follow
@@ -83,7 +82,7 @@ export default function SearchUser({ params }: { params: { username: string } })
                         setFollowers(followers);
                     }
                     setFollowerLength(followers.length);
-                    const isUserFollowed = followers.some((follower: any) => follower.id === userlogged);
+                    const isUserFollowed = followers.some((follower: any) => follower.id === userId);
                     setIsFollowed(isUserFollowed);
                 } catch (error) {
                     console.error("Failed :", error);

@@ -18,7 +18,7 @@ export default function Album({ params }: { params: { albumId: string } }) {
     const [imagespath, setImagesPath] = useState<any[]>([]);
     const [userdata, setUserData] = useState<any>([]);
 
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const router = useRouter();
 
     useEffect(() => {
@@ -31,7 +31,6 @@ export default function Album({ params }: { params: { albumId: string } }) {
             })
             const dataAlbum = response.data.data;
             const photolist = dataAlbum.photos;
-            console.log(dataAlbum);
             setAlbumData(dataAlbum);
             if (Array.isArray(photolist)) {
                 const imageIds = photolist.map(image => image.id);
@@ -39,17 +38,6 @@ export default function Album({ params }: { params: { albumId: string } }) {
             }
         }
         getDataAlbum();
-
-        const getUser = async () => {
-            const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            const dataUser = response.data.data;
-            setUserData(dataUser[0]);
-        }
-        getUser();
     }, [])
 
     const handledeletealbum = async () => {
@@ -59,11 +47,21 @@ export default function Album({ params }: { params: { albumId: string } }) {
                 Authorization: `Bearer ${token}`,
             }
         })
-        console.log(response.data);
         router.push('/profile')
     }
 
-    const isOwner = userdata.id === albumdata.userId
+    const handledeletephotofromalbum = async (photoId: any) => {
+        const token = localStorage.getItem("token");
+        const response = await axios.delete(process.env.NEXT_PUBLIC_API_RATIO + `/albums/${params.albumId}/photos/${photoId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        window.location.reload();
+    }
+
+    const userId = localStorage.getItem("userid")
+    const isOwner = userId === albumdata.userId
 
     return (
         <>
@@ -111,15 +109,20 @@ export default function Album({ params }: { params: { albumId: string } }) {
                             <div className="w-full lg:columns-4 md:columns-3 columns-2 gap-3">
                                 {imagespath.map((image, index) => {
                                     return (
-                                        <Link href={`/post/${image.id}`} key={index}>
-                                            <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
+                                        <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
+                                            {isOwner ? (
+                                                <div className="absolute hover:cursor-pointer top-0 left-0 p-2 rounded-md m-1 bg-white text-red-500" onClick={() => handledeletephotofromalbum(image.id)}><MdDelete/></div>
+                                            ) : (
+                                                <></>
+                                            )}
+                                            <Link href={`/post/${image.id}`} key={index}>
                                                 <img
                                                     src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
                                                     className="rounded-md mb-2"
                                                     alt=""
                                                 />
-                                            </div>
-                                        </Link>
+                                            </Link>
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -129,27 +132,27 @@ export default function Album({ params }: { params: { albumId: string } }) {
                 </div>
             </div>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Hapus Album "{albumdata.title}"</ModalHeader>
-              <ModalBody>
-                <p> 
-                  Anda yakin ingin menghapus album ini?
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose}>
-                  Batal
-                </Button>
-                <Button color="danger" onPress={handledeletealbum}>
-                  Hapus
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Hapus Album "{albumdata.title}"</ModalHeader>
+                            <ModalBody>
+                                <p>
+                                    Anda yakin ingin menghapus album ini?
+                                </p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button variant="light" onPress={onClose}>
+                                    Batal
+                                </Button>
+                                <Button color="danger" onPress={handledeletealbum}>
+                                    Hapus
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }

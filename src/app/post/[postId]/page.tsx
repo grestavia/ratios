@@ -26,34 +26,17 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [albums, setAlbums] = useState<any[]>([]);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [currentUserId, setUserId] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [amountdonation, setAmountDonation] = useState<any>();
   const [donationmodal, setDonationModal] = useState(false);
   const [albummodal, setAlbumModal] = useState(false);
-
-  // Get Data User Saat Ini
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const fetchData1 = async () => {
-      const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const dataUser = response1.data.data;
-      if (Array.isArray(dataUser)) {
-        const userId = dataUser.map((user) => user.id);
-        setUserId(dataUser[0].id);
-        setCurrentUser(dataUser[0]);
-      }
-    };
-    fetchData1();
-  }, [])
+  const [userId, setUserId] = useState<any>();
 
   // Get Data Post dan Set Status Like
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const userid = localStorage.getItem('userid');
+    setUserId(userid);
 
     const fetchPost = async () => {
       try {
@@ -65,7 +48,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
         setLikesCount(response.data.data.likes.length);
         setPost(response.data);
         // Cek Apakah User Sudah Menyukai Postingan
-        const isUserLiked = response.data.data.likes.some((like: any) => like.userId === currentUserId);
+        const isUserLiked = response.data.data.likes.some((like: any) => like.userId === userId);
         setIsLiked(isUserLiked);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -73,10 +56,10 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     };
     fetchPost();
 
-    if (currentUserId) {
+    if (userId) {
       const fetchAlbum = async () => {
         try {
-          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${currentUserId}/albums`, 
+          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, 
           {
             headers: {
               "Authorization": `Bearer ${token}`
@@ -84,14 +67,13 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
           }
           );
           setAlbums(response.data.data);
-          console.log(response.data.data);
         } catch (error) {
           console.error("Error fetching album:", error);
         }
       };
       fetchAlbum();
     }
-  }, [params, currentUserId]);
+  }, [params.postId, userId]);
 
   // Handler Nilai Input, Validasi
   const handleInputChange = (e: any) => {
@@ -156,7 +138,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
-  const isOwner = currentUser && post && currentUser.id === post.data.user.id;
+  const isOwner = userId === post?.data.user.id;
 
   return (
     <>

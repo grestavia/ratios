@@ -9,26 +9,9 @@ export default function AlbumTab({data, user} : any) {
     const [userdata, setUserData] = useState<any>([]);
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const fetchData1 = async () => {
-            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const dataUser = response1.data.data;
-            console.log(dataUser);
-            if (Array.isArray(dataUser)) {
-                const userId = dataUser.map((user) => user.id);
-                setUserData(dataUser[0]);
-            }
-        };
-        fetchData1();
-    }, []);
-
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    const userId = localStorage.getItem("userid");
 
     const handleNewAlbumSubmit = async (e: any) => {
         e.preventDefault();
@@ -52,7 +35,7 @@ export default function AlbumTab({data, user} : any) {
     return (
         <>
             {data.length === 0 ? (
-                userdata.username === user ? (
+                user === null ? (
                     <>
                     <div className="flex flex-col items-center gap-3">
                         <p className="text-gray-500">Kamu belum mengunggah album apapun.</p>
@@ -70,7 +53,7 @@ export default function AlbumTab({data, user} : any) {
             ) : (
                 <>
                     <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
-                        {userdata.username === user ? (
+                        {user === null ? (
                             <>
                             <div onClick={onOpen} className=" gap-2 border-[3px] flex-col hover:cursor-pointer border-dashed border-[#07A081] hover:scale-[101%] hover:brightness-75 transition ease-in h-auto aspect-square w-full rounded-md flex items-center justify-center">
                             <MdAdd className="text-[#07A081]" size={30} />

@@ -29,25 +29,6 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
-        // Fungsi untuk mengambil data pengguna yang sudah login
-        const fetchDataUser = async () => {
-            const token = localStorage.getItem("token");
-            const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const dataUser = response1.data.data;
-            if (Array.isArray(dataUser)) {
-                const userId = dataUser.map((user) => user.id);
-                setLoggedInUserId(dataUser[0].id);
-                console.log(dataUser[0].id);
-            }
-        };
-        fetchDataUser();
-    }, []);
-
-    useEffect(() => {
         // Fungsi untuk mengambil komentar dari server
         const fetchComments = async () => {
             try {
@@ -136,6 +117,8 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
         }
     }
 
+    const userId = localStorage.getItem('userid');
+
     return (
         <div className="komentar flex mt-5 p-2 bg-[#F0F4F9] gap-3 rounded-xl flex-col">
             <div>
@@ -156,7 +139,7 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                                     }}
                                 />
                             </Link>
-                            {loggedInUserId === komentar.user.id && (
+                            {userId === komentar.user.id && (
                                 <>
                                     <Dropdown>
                                         <DropdownTrigger>

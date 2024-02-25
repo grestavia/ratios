@@ -24,18 +24,19 @@ export default function Header() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userid");
     const fetchData = async () => {
       if (token) {
         setJWT(token);
         const response = await axios.get(
-          process.env.NEXT_PUBLIC_API_RATIO + "/users",
+          process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        const dataUser = response.data.data[0];
+        const dataUser = response.data.data;
         setUserData(dataUser);
       } else {
         console.log("Token not found");

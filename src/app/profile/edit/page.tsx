@@ -89,10 +89,11 @@ export default function EditProfile() {
   };
 
   useEffect(() => {
+    const userId = localStorage.getItem("userid");
     const token = localStorage.getItem("token");
     const fetchUserData = async () => {
       const responseUser = await axios.get(
-        process.env.NEXT_PUBLIC_API_RATIO + `/users`,
+        process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -100,8 +101,7 @@ export default function EditProfile() {
         }
       );
       const dataUser = responseUser.data.data;
-      if (Array.isArray(dataUser)) {
-        const firstUser = dataUser[0];
+        const firstUser = dataUser;
         setFormData({
           username: firstUser.username,
           fullName: firstUser.fullName,
@@ -109,7 +109,6 @@ export default function EditProfile() {
           photoUrl: firstUser.photoUrl,
           email: firstUser.email,
         });
-      }
     };
     fetchUserData();
   }, []);

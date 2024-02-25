@@ -7,17 +7,15 @@ export default function PhotoTab({data}: any) {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userid");
         const fetchData1 = async () => {
-          const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users`, {
+          const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           const dataUser = response1.data.data;
-          if (Array.isArray(dataUser)) {
-            const userId = dataUser.map((user) => user.id);
-            setUserData(dataUser[0]);
-          }
+          setUserData(dataUser);
         };
         fetchData1();
       }, []);

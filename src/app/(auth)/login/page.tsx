@@ -34,6 +34,7 @@ export default function Login() {
     console.log(data);
     router.push('/')
     localStorage.setItem("token", data.data.token)
+    localStorage.setItem("userid", data.data.user.id)
     if (data.status === 400) {
       setErrorAlert(true);
       setErrorMessage(
