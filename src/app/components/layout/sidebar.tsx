@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link'
+import { Button } from '@nextui-org/react';
 import useSidebarStore from '@/app/useSidebarStore';
 
 export default function Sidebar() {
@@ -43,9 +44,9 @@ export default function Sidebar() {
         {links.map((link, index) => {
           return (        
         <Link key={index} href={link.route} className='w-full'>
-          <li className={router === link.indicator ? "bg-[#07A081] text-white rounded-lg w-full" : ""}>
+          <Button className={router === link.indicator ? "bg-[#07A081] py-4 px-0 justify-start text-white rounded-lg w-full" : "px-0 justify-start bg-transparent w-full"}>
             <p className='px-5 py-3 '>{link.name}</p>
-          </li>
+          </Button>
         </Link>
           )
         })}
