@@ -22,13 +22,14 @@ interface CommentData {
 
 const Comment: React.FC<CommentProps> = ({ postId }) => {
     const [comments, setComments] = useState<string>('');
-    const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
     const [commentList, setCommentList] = useState<any[]>([]);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null); // State baru untuk menyimpan ID komentar yang sedang diedit
-
+    const [userId, setUserId] = useState<any>();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
+        const userid = localStorage.getItem('userid');
+        setUserId(userid);
         // Fungsi untuk mengambil komentar dari server
         const fetchComments = async () => {
             try {
@@ -116,8 +117,6 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
             console.error("Error deleting comment:", error);
         }
     }
-
-    const userId = localStorage.getItem('userid');
 
     return (
         <div className="komentar flex mt-5 p-2 bg-[#F0F4F9] gap-3 rounded-xl flex-col">
