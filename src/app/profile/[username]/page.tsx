@@ -23,10 +23,11 @@ export default function SearchUser({ params }: { params: { username: string } })
     const [followerlength, setFollowerLength] = useState<any>([]);
     const [followerModalOpen, setFollowerModalOpen] = useState(false);
     const [followingModalOpen, setFollowingModalOpen] = useState(false);
-
-    const userId = localStorage.getItem("userid");
-
+    const [userId, setUserId] = useState<any>([]);
+    
     useEffect(() => {
+        const userid = localStorage.getItem("userid");
+        setUserId(userid);
         const token = localStorage.getItem("token");
 
         //Get Data dari User yang Sedang Diakses
@@ -55,13 +56,12 @@ export default function SearchUser({ params }: { params: { username: string } })
                     },
                 });
                 const dataUser = response1.data.data;
-                if (Array.isArray(dataUser) && dataUser.length > 0) {
-                    setUserCheck(dataUser[0]);
-                }
+                setUserCheck(dataUser);
             } catch (error) {
                 console.error("Failed to check user:", error);
             }
         };
+        checkUser();
         fetchDataUser();
     }, [params.username]);
 
