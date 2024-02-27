@@ -5,6 +5,7 @@ import Link from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { Button } from "@nextui-org/react";
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -57,7 +58,7 @@ export default function Home() {
         <Sidebar />
         {searchpage ? (
           <>
-            <div className="konten flex justify-between scrollbar-thin scrollbar-thumb-neutral-300 flex-col w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+            <motion.div transition={{ type: 'easeInOut', duration: 0.3 }} className="konten flex justify-between scrollbar-thin scrollbar-thumb-neutral-300 flex-col w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
             <div className="wrap overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
                 { imagesearchpath.length === 0 ? (
                   <>
@@ -99,11 +100,11 @@ export default function Home() {
                   </div>
                 </div>
               </form>
-            </div>
+            </motion.div>
           </>
         ) : (
           <>
-            <div className="konten flex justify-between scrollbar-thin scrollbar-thumb-neutral-300 flex-col w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+            <motion.div transition={{ type: 'easeInOut', duration: 0.3 }} className="konten flex justify-between scrollbar-thin scrollbar-thumb-neutral-300 flex-col w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
               <div className="wrap overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
                 <div className="lg:columns-4 md:columns-3 columns-2 gap-3">
                   {imagespath.map((image, index) => {
@@ -136,7 +137,7 @@ export default function Home() {
                   </div>
                 </div>
               </form>
-            </div>
+            </motion.div>
           </>
         )}
       </div>
