@@ -18,7 +18,6 @@ import useSidebarStore from "@/app/useSidebarStore";
 export default function Header() {
   const [userdata, setUserData] = useState<any>([]);
   const [jwt, setJWT] = useState("");
-  const [opensidebar, setOpenSidebar] = useState(false);
 
   const {setSidebar} = useSidebarStore();
 
@@ -48,6 +47,7 @@ export default function Header() {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userid");
     window.location.reload();
   };
 
