@@ -66,7 +66,7 @@ export default function AlbumTab({data, user} : any) {
                         )}
                         {data.map((album: any, index: any) => {
                             return (
-                                <>
+                                <div key={index}>
                                     <Link href={`/album/${album.id}`} key={index}>
                                         <div className="relative hover:scale-[101%] hover:brightness-75 transition ease-in shadow-inner aspect-square rounded-md items-center justify-center flex flex-col">
                                             {album.photos[0] ? (
@@ -86,7 +86,7 @@ export default function AlbumTab({data, user} : any) {
                                             <div className=" rounded-md absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
                                         </div>
                                     </Link>
-                                </>
+                                </div>
                             )
                         })}
                     </div>

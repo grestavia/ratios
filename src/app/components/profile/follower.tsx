@@ -17,7 +17,7 @@ export default function Follower({isOpen, onClose, followers}: any) {
                         </ModalHeader>
                         <ModalBody>
                             {followers.map((follower: any, index: any) => (
-                                <>
+                                <div key={index}>
                                     <Link key={index} href={`/profile/${follower.username}`}>
                                         <Button className="py-7 px-2 bg-transparent flex justify-start">
                                             <User
@@ -30,7 +30,7 @@ export default function Follower({isOpen, onClose, followers}: any) {
                                         </Button>
                                     </Link>
                                     <hr />
-                                </>
+                                </div>
                             ))}
                         </ModalBody>
                         <ModalFooter>
