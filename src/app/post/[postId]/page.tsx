@@ -26,8 +26,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [albums, setAlbums] = useState<any[]>([]);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [amountdonation, setAmountDonation] = useState<any>();
+  const [amountdonation, setAmountDonation] = useState<number>(0);
   const [donationmodal, setDonationModal] = useState(false);
   const [albummodal, setAlbumModal] = useState(false);
   const [userId, setUserId] = useState<any>();
@@ -81,6 +80,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     setAmountDonation(value + 1000);
     const isInvalid = value < 5000;
     setInputValue(value);
+    console.log(amountdonation);
     setIsInvalidInput(isInvalid);
     const submitButton = document.getElementById(
       "submitButton"
@@ -98,13 +98,11 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   // Handler Submit Form
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const payload = {
-      amount: amountdonation,
-      orderId: params.postId
-    }
+    const payload = new URLSearchParams();
+    payload.append('amount', amountdonation.toString());
     const token = localStorage.getItem('token');
     try {
-      const donation = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/donation/photo`, payload, {
+      const donation = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}/donation`, payload, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
