@@ -1,7 +1,5 @@
 "use client";
-import Header from "../components/layout/header";
 import Sidebar from "../components/layout/sidebar";
-import { ReactNode } from "react";
 import {
   Modal,
   ModalContent,
@@ -15,7 +13,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue,
+  Button,
 } from "@nextui-org/react";
 import { useState } from "react";
 
@@ -63,12 +61,12 @@ export default function Wallet() {
               <p className="text-sm md:text-[16px]">Saldo Dompet: </p>
               <p className="text-sm md:text-[16px]">Rp. 100.000</p>
             </section>
-            <button
+            <Button
               onClick={onOpen}
-              className="w-full md:w-auto whitespace-nowrap rounded-lg p-2 hover:bg-[#07A081] hover:text-white border-1 border-[#07A081]"
+              className="w-full md:w-auto whitespace-nowrap rounded-lg p-2 bg-transparent mx-2 hover:bg-[#07A081] hover:text-white border-1 border-[#07A081]"
             >
               Tarik Saldo
-            </button>
+            </Button>
             <Modal
               className="rounded-lg"
               isOpen={isOpen}
@@ -105,13 +103,13 @@ export default function Wallet() {
                       </div>
                     </ModalBody>
                     <ModalFooter>
-                      <input
+                      <Button
                         type="submit"
-                        value="Tarik Dana"
                         id="submitButton"
                         className="disabled:bg-[#07a08154] disabled:cursor-not-allowed cursor-pointer bg-[#07A081] text-white p-2 rounded-md w-full"
                         disabled={isInvalidInput}
-                      />
+                      >Tarik Dana
+                      </Button>
                     </ModalFooter>
                   </form>
                 )}

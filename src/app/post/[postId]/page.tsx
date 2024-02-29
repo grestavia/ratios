@@ -1,12 +1,6 @@
 "use client";
 import Sidebar from "@/app/components/layout/sidebar";
-import { User } from "@nextui-org/react";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
 } from "@nextui-org/react";
 import Link from "next/link";
