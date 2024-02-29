@@ -103,6 +103,20 @@ body{
     height: 100vh;
 }
 
+/* global.css */
+::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* warna latar belakang track scrollbar */
+}
+
 ::-webkit-scrollbar-thumb {
-    border-radius: 100vw;
-  }
+  background: #888; /* warna thumb scrollbar */
+  border-radius: 8px; /* atur border radius sesuai keinginan Anda */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* warna thumb saat di hover */
+}
