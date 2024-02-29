@@ -19,6 +19,8 @@ export default function Upload() {
   const [description, setDescription] = useState<string>('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [sucessAlert, setSucessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<any>("");
 
   const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -58,19 +60,38 @@ export default function Upload() {
         setSucessAlert(false);
       }, 3000);
       router.push(`/post/${postData.id}`);
-    } catch (error) {
+    } catch (error: any) {
+      setErrorAlert(true);
+      setErrorMessage(
+        error.response.data.errors.messages
+          .map((item: { message: string }) => item.message)
+          .join(" dan ")
+      );
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 3000);
       console.error("Error uploading photo:", error);
     }
   };
 
   return (
-    <>{sucessAlert && (
+    <>
+    {sucessAlert && (
       <Alert
         variant="filled"
         className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
         severity="success"
       >
         Gambar Berhasil di Post
+      </Alert>
+    )}
+    {errorAlert && (
+      <Alert
+        variant="filled"
+        className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+        severity="error"
+      >
+        {errorMessage}
       </Alert>
     )}
       <div className="flex justify-between pt-20 px-5 lg:px-5">
