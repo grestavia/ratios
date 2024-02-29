@@ -12,22 +12,39 @@ export default function Home() {
   const [imagespath, setImagesPath] = useState<any[]>([]);
   const [imagesearchpath, setImagesSearchPath] = useState<any[]>([]);
   const [searchpage, setSearchPage] = useState(false);
+  const [debouncedPageLoad, setDebouncedPageLoad] = useState(true);
 
   useEffect(() => {
     const fetchImage = async () => {
-      const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos?query=", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      try {
+        const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + "/photos?query=", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }
+        });
+        const imageData = response.data.data;
+        if (Array.isArray(imageData)) {
+          setImagesPath(imageData);
         }
-      });
-      const imageData = response.data.data;
-      if (Array.isArray(imageData)) {
-        setImagesPath(imageData);
+      } catch (error) {
+
       }
+    }
+    if (debouncedPageLoad) {
+      fetchImage();
+      setDebouncedPageLoad(false);
     }
 
     fetchImage();
-  }, [])
+  }, [debouncedPageLoad])
+
+  useEffect(() => {
+    const debouncedLoad = setTimeout(() => {
+      setDebouncedPageLoad(true);
+    }, 1000); // Adjust the delay time as needed
+
+    return () => clearTimeout(debouncedLoad);
+  }, [search])
 
   const handleSearchSubmit = async (e: any) => {
     e.preventDefault();
@@ -59,31 +76,31 @@ export default function Home() {
         {searchpage ? (
           <>
             <motion.div transition={{ type: 'easeInOut', duration: 0.3 }} className="konten flex justify-between scrollbar-thin scrollbar-thumb-neutral-300 flex-col w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
-            <div className="wrap overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
-                { imagesearchpath.length === 0 ? (
+              <div className="wrap overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden">
+                {imagesearchpath.length === 0 ? (
                   <>
-                 <p className="text-center">Tidak Ada Postingan Terkait Dengan Kata Kunci "<b>{search}</b>"</p>
+                    <p className="text-center">Tidak Ada Postingan Terkait Dengan Kata Kunci "<b>{search}</b>"</p>
                   </>
                 ) : (
                   <>
-                  <p className="text-center mb-5">Hasil Pencarian Terkait "<b>{search}</b>"</p>
-                  <div className="lg:columns-4 md:columns-3 columns-2 gap-3">
-                  {imagesearchpath.map((image, index) => {
-                    return (
-                      <Link href={`/post/${image.id}`} key={index}>
-                        <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
-                          <img
-                            src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
-                            className="rounded-md mb-2"
-                            alt=""
-                          />
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
+                    <p className="text-center mb-5">Hasil Pencarian Terkait "<b>{search}</b>"</p>
+                    <div className="lg:columns-4 md:columns-3 columns-2 gap-3">
+                      {imagesearchpath.map((image, index) => {
+                        return (
+                          <Link href={`/post/${image.id}`} key={index}>
+                            <div className="mb-3 hover:brightness-[.80] rounded-md transform hover:scale-[102%] transition ease-in">
+                              <img
+                                src={process.env.NEXT_PUBLIC_API_RATIO + `/files/images/photos/${image.locationFile}`}
+                                className="rounded-md mb-2"
+                                alt=""
+                              />
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </>
-                ) }
+                )}
               </div>
               <form onSubmit={handleSearchSubmit} action="">
                 <div className="searchbar bg-white p-2 w-full">
