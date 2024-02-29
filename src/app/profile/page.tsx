@@ -64,7 +64,7 @@ export default function Profile() {
     }
   }, [userId]);
 
-  // Get Follower - FOllowing
+  // Get Follower - Following
   useEffect(() => {
     const userId = localStorage.getItem("userid");
     if (userId) {
@@ -139,6 +139,7 @@ export default function Profile() {
                   isOpen={followerModalOpen}
                   onClose={() => setFollowerModalOpen(false)}
                   followers={followers}
+                  owner={true}
                 />
                 <Divider orientation="vertical" />
                 <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">

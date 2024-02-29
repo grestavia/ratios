@@ -195,6 +195,7 @@ export default function SearchUser({ params }: { params: { username: string } })
                             isOpen={followerModalOpen}
                             onClose={() => setFollowerModalOpen(false)}
                             followers={followers}
+                            owner={false}
                             />
                             <Divider orientation="vertical" />
                             <Button onPress={() => setFollowingModalOpen(true)} className="bg-transparent">
