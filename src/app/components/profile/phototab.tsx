@@ -8,16 +8,20 @@ export default function PhotoTab({data}: any) {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userid");
-        const fetchData1 = async () => {
-          const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const dataUser = response1.data.data;
-          setUserData(dataUser);
-        };
-        fetchData1();
+        try {
+            const fetchData1 = async () => {
+                const response1 = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                });
+                const dataUser = response1.data.data;
+                setUserData(dataUser);
+              };
+              fetchData1();
+        } catch (error) {
+            console.error("Failed to fetch user data:", error);
+        }
       }, []);
 
     return (
