@@ -10,15 +10,21 @@ import {
   MdAlternateEmail,
   MdOutlineLocationOn,
 } from "react-icons/md";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@nextui-org/react";
 import Alert from "@mui/material/Alert";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Register() {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
-  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] =
-    useState(false);
+  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] = useState(false);
+  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
+  const [isConfirmPasswordInvalid, setIsConfirmPasswordInvalid] = useState(false);
+  const [isAddressInvalid, setIsAddressInvalid] = useState(false);
+  const [isFullnameInvalid, setIsFullnameInvalid] = useState(false);
+  const [isinvalid, setIsInvalid] = useState(false);
+  const [isUsernameValid, setIsUsernameInvalid] = useState(false);
 
   const router = useRouter();
 
@@ -50,24 +56,26 @@ export default function Register() {
   const submitFormData = async (e: any) => {
     e.preventDefault();
 
-    const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/register", new URLSearchParams(formData), {
-    });
-
-    const data = response.data;
-    console.log(data);
-    router.push("/login");
-    if (data.status === 400) {
-      setErrorAlert(true);
-      setErrorMessage(
-        "Error Terjadi: " +
-          data.errors.messages
+    const register = async () => {
+      try {
+        const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/register", new URLSearchParams(formData), {
+        });
+        const data = response.data;
+        console.log(data);
+        router.push("/login");
+      } catch (error: any) {
+        setErrorAlert(true);
+        setErrorMessage(
+          error.response.data.errors.error
             .map((item: { message: string }) => item.message)
             .join(" dan ")
-      );
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 3000);
+        );
+        setTimeout(() => {
+          setErrorAlert(false);
+        }, 3000);
+      }
     }
+    register();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +84,31 @@ export default function Register() {
       ...prevState,
       [name]: value,
     }));
+    if (name === "email") {
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      setIsInvalid(!isValidEmail);
+    }
+  
+    if (name === "password") {
+      setIsPasswordInvalid(value.length < 8);
+    }
+  
+    if (name === "confirmPassword") {
+      setIsConfirmPasswordInvalid(value !== formData.password);
+    }
+  
+    if (name === "address") {
+      setIsAddressInvalid(value.trim() === "");
+    }
+
+    if (name === "fullname") {
+      setIsFullnameInvalid(value.trim() === "");
+    }
+  
+    if (name === "username") {
+      const isValidUsername = /^[a-zA-Z0-9]+$/.test(value);
+      setIsUsernameInvalid(!isValidUsername);
+    }
   };
 
   return (
@@ -90,7 +123,7 @@ export default function Register() {
         </Alert>
       )}
       <div className="flex justify-between pt-20 px-5 lg:px-10">
-        <div className="konten block md:flex overflow-scroll md:overflow-hidden flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+        <div className="konten block md:flex overflow-scroll md:overflow-x-hidden flex-col justify-center w-full px-5 pt-5 bg-white h-[calc(100vh-110px)] rounded-lg">
           <div className="flex mx-auto flex-col justify-center p-5 rounded-lg align-middle my-auto border-1 w-full max-w-lg">
             <h1 className="mx-auto text-xl font-semibold">Daftar</h1>
             <hr className="my-3" />
@@ -105,17 +138,23 @@ export default function Register() {
               <div className="flex flex-col md:flex-row gap-2">
                 <Input
                   isRequired
+                  color={isFullnameInvalid ? "danger" : "default"}
+                  errorMessage={isFullnameInvalid && "Fullname is required"}
                   onChange={handleInputChange}
                   startContent={
                     <MdOutlineAccountCircle className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                   }
                   type="text"
                   name="fullname"
+                  variant="bordered"
                   label="Nama Lengkap"
-                  className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                  className="w-full mb-3 rounded-xl focus:outline-none"
                 />
                 <Input
                   isRequired
+                  color={isUsernameValid ? "danger" : "default"}
+                  errorMessage={isUsernameValid && "Please enter a valid username"}
+                  variant="bordered"
                   onChange={handleInputChange}
                   startContent={
                     <MdAlternateEmail className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -123,30 +162,36 @@ export default function Register() {
                   type="text"
                   name="username"
                   label="Usename"
-                  className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                  className="w-full mb-3 rounded-xl focus:outline-none"
                 />
               </div>
               <Input
                 isRequired
+                variant="bordered"
                 onChange={handleInputChange}
                 startContent={
                   <MdOutlineMailOutline className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
                 name="email"
+                color={isinvalid ? "danger" : "default"}
+                errorMessage={isinvalid && "Please enter a valid email"}
                 type="email"
                 label="Email"
-                className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                className="w-full mb-3 rounded-xl focus:outline-none"
               />
               <Input
                 isRequired
+                variant="bordered"
                 onChange={handleInputChange}
                 startContent={
                   <MdOutlineLocationOn className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
+                color={isAddressInvalid ? "danger" : "default"}
+                errorMessage={isAddressInvalid && "Address is required"}
                 type="text"
                 name="address"
                 label="Alamat"
-                className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                className="w-full mb-3 rounded-xl focus:outline-none"
               />
               <div className="flex flex-col md:flex-row gap-2">
                 <Input
@@ -157,6 +202,8 @@ export default function Register() {
                   name="password"
                   isRequired
                   minLength={8}
+                  color={isPasswordInvalid ? "danger" : "default"}
+                  errorMessage={isPasswordInvalid && "Password must be at least 8 characters"}
                   onChange={handleInputChange}
                   variant="bordered"
                   endContent={
@@ -176,7 +223,7 @@ export default function Register() {
                     </button>
                   }
                   type={isVisiblePassword ? "text" : "password"}
-                  className="w-full border-2 mb-3 border-[#07A081] rounded-xl focus:outline-none bg-[#f5f5f5]"
+                  className="w-full mb-3 rounded-xl focus:outline-none"
                 />
                 <Input
                   startContent={
@@ -184,6 +231,8 @@ export default function Register() {
                   }
                   label="Konfirmasi Password"
                   isRequired
+                  color={isConfirmPasswordInvalid ? "danger" : "default"}
+                  errorMessage={isConfirmPasswordInvalid && "Confirm password must be same as password"}
                   onChange={handleInputChange}
                   name="confirmPassword"
                   variant="bordered"
@@ -204,7 +253,7 @@ export default function Register() {
                     </button>
                   }
                   type={isVisibleConfirmPassword ? "text" : "password"}
-                  className="w-full border-2 mb-3 border-[#07A081] rounded-xl focus:outline-none bg-[#f5f5f5]"
+                  className="w-full mb-3 rounded-xl focus:outline-none"
                 />
               </div>
               <p className="text-md mb-3">
@@ -213,12 +262,12 @@ export default function Register() {
                   Login
                 </a>
               </p>
-              <button
+              <Button
                 type="submit"
                 className="p-2 rounded-md bg-[#07A081] text-white cursor-pointer"
               >
                 Daftar
-              </button>
+              </Button>
             </form>
           </div>
         </div>

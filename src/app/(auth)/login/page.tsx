@@ -1,5 +1,4 @@
 "use client";
-import { MdError } from "react-icons/md";
 import { Input } from "@nextui-org/react";
 import React from "react";
 import {
@@ -8,69 +7,87 @@ import {
   MdOutlineMailOutline,
   MdOutlineKey,
 } from "react-icons/md";
-import { useState, FormEvent, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import Alert from "@mui/material/Alert";
 import axios from "axios";
+import { Button } from "@nextui-org/react";
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const router = useRouter();
-
-  const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const isInvalid = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [isinvalid, setIsInvalid] = useState(false);
+  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
+
   const submitFormData = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
 
-    const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/login", new URLSearchParams(formData), {
-    });
-
-    const data = response.data;
-    console.log(data);
-    router.push('/')
-    localStorage.setItem("token", data.data.token)
-    localStorage.setItem("userid", data.data.user.id)
-    if (data.status === 400) {
-      setErrorAlert(true);
-      setErrorMessage(
-        data.errors.messages
-          .map((item: { message: string }) => item.message)
-          .join(" dan ")
-      );
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 3000);
+    const login = async () => {
+      try {
+        const response = await axios.post(process.env.NEXT_PUBLIC_API_RATIO + "/users/auth/login", new URLSearchParams(formData), {}
+        );
+        const data = response.data;
+        console.log(data);
+        router.push('/')
+        localStorage.setItem("token", data.data.token)
+        localStorage.setItem("userid", data.data.user.id)
+      } catch (error: any) {
+        setErrorAlert(true);
+        console.log(error);
+        setErrorMessage(
+          error.response.data.errors.messages
+            .map((item: { message: string }) => item.message)
+            .join(" dan ")
+        );
+        setTimeout(() => {
+          setErrorAlert(false);
+        }, 3000);
+      } finally {
+        setLoading(false);
+      }
     }
+    login();
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+    if (name === "email") {
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      setIsInvalid(!isValidEmail);
+    }
+
+    if (name === "password") {
+      // Validasi panjang minimal password, misalnya minimal 6 karakter
+      setIsPasswordInvalid(value.length < 8);
+    }
   };
 
   return (
     <>
       {errorAlert && (
         <>
-          <motion.div initial={{ opacity: 0, x: '-50%', y: '10' }}
-            animate={{ opacity: 1, y: '-50%' }}
-            transition={{ ease: "easeIn", duration: 0.5 }} className="bg-[#ec8d8d] px-7 py-3 absolute top-unit-20 rounded-md left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="flex items-center">
-              <MdError className="text-[#cf3d3d] w-9 h-9" />
-              <section className="message flex flex-col mx-3">
-                <h1 className="text-md font-semibold text-white">Error</h1>
-                <p className="text-sm text-white">{errorMessage}</p>
-              </section>
-            </div>
-          </motion.div>
+          <Alert
+            variant="filled"
+            className="fixed left-1/2 top-2 transform -translate-x-1/2 z-10"
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
         </>
       )}
       <div className="flex justify-between pt-20 px-5 lg:px-10">
@@ -90,22 +107,27 @@ export default function Login() {
                 isRequired
                 onChange={handleInputChange}
                 startContent={
-                  <MdOutlineMailOutline className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  <MdOutlineMailOutline className={isinvalid ? "text-2xl pointer-events-none flex-shrink-0 text-danger" : "text-2xl text-default-400 pointer-events-none flex-shrink-0"} />
                 }
+                color={isinvalid ? "danger" : "default"}
+                errorMessage={isinvalid && "Please enter a valid email"}
                 type="email"
                 name="email"
+                variant="bordered"
                 label="Email"
-                className="w-full mb-3 border-2 border-[#07A081] rounded-xl focus:outline-none"
+                className="w-full mb-3 rounded-xl focus:outline-none"
               />
               <Input
                 startContent={
-                  <MdOutlineKey className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  <MdOutlineKey className={isPasswordInvalid ? "text-2xl pointer-events-none flex-shrink-0 text-danger" : "text-2xl text-default-400 pointer-events-none flex-shrink-0"} />
                 }
                 label="Password"
                 isRequired
                 onChange={handleInputChange}
                 variant="bordered"
                 name="password"
+                color={isPasswordInvalid ? "danger" : "default"}
+                errorMessage={isPasswordInvalid && "Password must be at least 8 characters"}
                 endContent={
                   <button
                     className="focus:outline-none"
@@ -114,8 +136,8 @@ export default function Login() {
                   >
                     {isVisible ? (
                       <MdRemoveRedEye
-                        color="#07A081"
-                        className="text-2xl text-default-400 pointer-events-none"
+                        color={isPasswordInvalid ? "#f31260" : "#07A081"}
+                        className="text-2xl pointer-events-none"
                       />
                     ) : (
                       <MdOutlineRemoveRedEye className="text-2xl text-default-400 pointer-events-none" />
@@ -123,7 +145,7 @@ export default function Login() {
                   </button>
                 }
                 type={isVisible ? "text" : "password"}
-                className="w-full border-2 mb-3 border-[#07A081] rounded-xl focus:outline-none bg-[#f5f5f5]"
+                className="w-full mb-3 rounded-xl focus:outline-none"
               />
               <p className="text-md">
                 Belum punya akun?{" "}
@@ -137,12 +159,13 @@ export default function Login() {
               >
                 Lupa Sandi?
               </a>
-              <button
+              <Button
                 type="submit"
+                isDisabled={loading}
                 className="p-2 rounded-md bg-[#07A081] text-white cursor-pointer"
               >
-                Login
-              </button>
+                {loading ? 'Loading...' : 'Login'}
+              </Button>
             </form>
           </div>
         </div>
