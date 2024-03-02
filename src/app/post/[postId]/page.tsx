@@ -33,42 +33,23 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
 
     const fetchPost = async () => {
       try {
-        const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-        setLikesCount(response.data.data.likes.length);
-        setPost(response.data);
-        // Cek Apakah User Sudah Menyukai Postingan
-        const isUserLiked = response.data.data.likes.some((like: any) => like.userId === userId);
+        const [response1, response2] = await Promise.all([
+          axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, { headers: { "Authorization": `Bearer ${token}` } }),
+          axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, { headers: { "Authorization": `Bearer ${token}` } })
+        ])
+        setLikesCount(response1.data.data.likes.length);
+        setPost(response1.data);
+        const commentData = response1.data.data.comentars;
+        setAlbums(response2.data.data);
+        const isUserLiked = response1.data.data.likes.some((like: any) => like.userId === userId);
         setIsLiked(isUserLiked);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
     };
     fetchPost();
-
-    if (userId) {
-      const fetchAlbum = async () => {
-        try {
-          const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, 
-          {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          }
-          );
-          setAlbums(response.data.data);
-        } catch (error) {
-          console.error("Error fetching album:", error);
-        }
-      };
-      fetchAlbum();
-    }
   }, [params.postId, userId]);
 
-  // Handler Nilai Input, Validasi
   const handleInputChange = (e: any) => {
     const value = Number(e.target.value);
     setAmountDonation(value + 1000);
@@ -84,12 +65,10 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
-  // Format Angka
   const formatNumber = (number: number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
-  // Handler Submit Form
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const payload = new URLSearchParams();
@@ -108,7 +87,6 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
-  // Handler Like
   const handleLikeClick = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -150,7 +128,7 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
               <div className="flex gap-2 flex-col xl:flex-row w-full mt-3 justify-between">
                 <Button onClick={handleLikeClick} className={isLiked ? "flex border-1 items-center gap-1 w-full bg-[#07A081] text-white justify-center p-1 rounded-lg" : "flex transition-all items-center gap-1 w-full border-[#07A081] bg-white border-1 text-[#07A081] justify-center p-1 rounded-lg"}>{isLiked ? <MdFavorite className="size-5" /> : <MdFavoriteBorder className="size-5" />} {likesCount} Suka</Button>
                 <Button onPress={() => setAlbumModal(true)} className="flex bg-white items-center gap-1 w-full border-[#07A081] border-1 text-[#07A081] justify-center p-1 rounded-lg"><MdLibraryAdd className="size-5" /> Tambah Ke Album</Button>
-                <AlbumModal isOpen={albummodal} photo={params.postId} data={albums} onClose={() => setAlbumModal(false)} post={post}/>
+                <AlbumModal isOpen={albummodal} photo={params.postId} data={albums} onClose={() => setAlbumModal(false)} post={post} />
               </div>
               {isOwner ? (
                 <>
