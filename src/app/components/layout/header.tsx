@@ -19,7 +19,7 @@ export default function Header() {
   const [userdata, setUserData] = useState<any>([]);
   const [jwt, setJWT] = useState("");
 
-  const {setSidebar} = useSidebarStore();
+  const { setSidebar } = useSidebarStore();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,7 +55,7 @@ export default function Header() {
     <div className="header bg-[#F0F4F9] fixed top-0 flex-row w-full flex items-center justify-between p-[2px] md:p-[8px]">
       <div className="flex items-center w-full ml-3 md:ml-5">
         <Button className="min-w-0 px-1 bg-transparent" onPress={() => setSidebar()}>
-          <MenuIcon/>
+          <MenuIcon />
         </Button>
         <a href="/" className="flex items-center">
           <img
@@ -71,9 +71,9 @@ export default function Header() {
       <div className="p-[12px] mr-5 md:mr-10">
         <Dropdown>
           <DropdownTrigger>
-            {jwt && userdata && (
+            {userdata && (
               <img
-                src={userdata.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${userdata.photoUrl}`}
+                src={userdata?.photoUrl && process.env.NEXT_PUBLIC_API_RATIO + `/files/images/profiles/${userdata.photoUrl}`}
                 className="max-h-[40px] max-w-[40px] rounded-full cursor-pointer"
                 alt=""
               />
@@ -84,12 +84,12 @@ export default function Header() {
               <DropdownItem key="usn">@{userdata.username}</DropdownItem>
             </DropdownSection>
             <DropdownSection title="Menu">
-            <DropdownItem startContent={<MdOutlinePerson />} href={`/profile`}>
-              Akun Anda
-            </DropdownItem>
-            <DropdownItem startContent={<MdLogout />} onClick={logout} className="text-red-500">
-              Keluar
-            </DropdownItem>
+              <DropdownItem startContent={<MdOutlinePerson />} href={`/profile`}>
+                Akun Anda
+              </DropdownItem>
+              <DropdownItem startContent={<MdLogout />} onClick={logout} className="text-red-500">
+                Keluar
+              </DropdownItem>
             </DropdownSection>
           </DropdownMenu>
         </Dropdown>
