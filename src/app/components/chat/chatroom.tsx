@@ -14,6 +14,7 @@ export default function ChatRoom({ selectedUser }: any) {
     const [id, setId] = useState<string>();
     const [userchat, setUserChat] = useState<any>();
     const [userId, setUserId] = useState<any>();
+    const [loading, setLoading] = useState<boolean>(true); // State untuk menandai loading
 
     const messageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -35,6 +36,8 @@ export default function ChatRoom({ selectedUser }: any) {
                     setUserChat(response.data.data);
                 } catch (error) {
                     console.log(error);
+                } finally {
+                    setLoading(false); // Setelah mendapatkan data, loading dihentikan
                 }
             }
         }
@@ -117,7 +120,9 @@ export default function ChatRoom({ selectedUser }: any) {
                             <hr />
                         </div>
                         <div ref={messageContainerRef} className="h-[calc(100vh-280px)] overflow-y-auto px-5 pt-3">
-                            {forme ? (
+                            {loading ? (
+                                <p>Loading...</p>
+                            ) : (
                                 <>
                                     {[...fromme, ...forme].sort((a, b) => a.send_on - b.send_on).map((message, index) => {
                                         return (
@@ -160,10 +165,6 @@ export default function ChatRoom({ selectedUser }: any) {
                                             </div>
                                         );
                                     })}
-                                </>
-                            ) : (
-                                <>
-                                    <p>loading</p>
                                 </>
                             )}
                         </div>

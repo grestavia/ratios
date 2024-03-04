@@ -22,8 +22,6 @@ export default function DonationModal({ isOpen, onClose, handleSubmit, handleInp
             )}
             <div className="flex flex-col gap-0.5">
               <p className="mt-3">Subtotal: Rp. {formatNumber(inputValue)}</p>
-              <p>Admin Fee: Rp. 1.000</p>
-              <p>Total: Rp. {formatNumber(inputValue + 1000)}</p>
             </div>
           </ModalBody>
           <ModalFooter>

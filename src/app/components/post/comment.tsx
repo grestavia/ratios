@@ -48,10 +48,8 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
         };
         fetchComments();
 
-        // Memperbarui komentar setiap 10 detik
         const interval = setInterval(fetchComments, 10000);
 
-        // Membersihkan interval saat komponen unmount
         return () => clearInterval(interval);
     }, [postId]);
 
@@ -88,9 +86,8 @@ const Comment: React.FC<CommentProps> = ({ postId }) => {
                 }
             });
             console.log(commentResponse.data);
-            // Setelah berhasil update, kosongkan input komentar dan tutup modal
             setComments('');
-            setEditingCommentId(null); // Reset editingCommentId setelah update berhasil
+            setEditingCommentId(null);
             onClose();
         } catch (error) {
             console.error("Error handling comment update:", error);

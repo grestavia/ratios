@@ -12,8 +12,10 @@ import Comment from "@/app/components/post/comment";
 import DetailPostHeader from "@/app/components/post/detailpostheader";
 import DonationModal from "@/app/components/post/donationmodal";
 import AlbumModal from "@/app/components/post/addtoalbum";
+import DonateStatusModal from "@/app/components/post/donatestatusmodal";
 
 export default function DetailPost({ params }: { params: { postId: string } }) {
+  const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState(0);
   const [isInvalidInput, setIsInvalidInput] = useState(false);
   const [post, setPost] = useState<{ data?: any } | null>(null);
@@ -24,27 +26,35 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
   const [donationmodal, setDonationModal] = useState(false);
   const [albummodal, setAlbumModal] = useState(false);
   const [userId, setUserId] = useState<any>();
+  const [orderId, setOrderId] = useState<any>();
+  const [statusmodal, setStatusModal] = useState(false);
+  const [donatestatus, setDonateStatus] = useState<any>("");
 
-  // Get Data Post dan Set Status Like
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userid = localStorage.getItem('userid');
     setUserId(userid);
 
+    setLoading(true);
+
     const fetchPost = async () => {
       try {
-        const [response1, response2] = await Promise.all([
-          axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, { headers: { "Authorization": `Bearer ${token}` } }),
-          axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, { headers: { "Authorization": `Bearer ${token}` } })
-        ])
-        setLikesCount(response1.data.data.likes.length);
-        setPost(response1.data);
-        const commentData = response1.data.data.comentars;
-        setAlbums(response2.data.data);
-        const isUserLiked = response1.data.data.likes.some((like: any) => like.userId === userId);
-        setIsLiked(isUserLiked);
+        if (userId) {
+          const [response1, response2] = await Promise.all([
+            axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/photos/${params.postId}`, { headers: { "Authorization": `Bearer ${token}` } }),
+            axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/users/${userId}/albums`, { headers: { "Authorization": `Bearer ${token}` } })
+          ])
+          setLikesCount(response1.data.data.likes.length);
+          setPost(response1.data);
+          const commentData = response1.data.data.comentars;
+          setAlbums(response2.data.data);
+          const isUserLiked = response1.data.data.likes.some((like: any) => like.userId === userId);
+          setIsLiked(isUserLiked);
+          setLoading(false)
+        }
       } catch (error) {
         console.error("Error fetching post:", error);
+        setLoading(false)
       }
     };
     fetchPost();
@@ -52,10 +62,9 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
 
   const handleInputChange = (e: any) => {
     const value = Number(e.target.value);
-    setAmountDonation(value + 1000);
+    setAmountDonation(value);
     const isInvalid = value < 5000;
     setInputValue(value);
-    console.log(amountdonation);
     setIsInvalidInput(isInvalid);
     const submitButton = document.getElementById(
       "submitButton"
@@ -80,8 +89,10 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
           "Authorization": `Bearer ${token}`
         }
       })
-      console.log(donation.data);
+      setAlbumModal(false);
+      setStatusModal(true);
       window.open(donation.data.data.redirectUrl);
+      setOrderId(donation.data.data.donationId);
     } catch (error) {
       console.error("Error submitting donation:", error);
     }
@@ -108,7 +119,37 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
     }
   };
 
+  const handleCheckStatus = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      if (orderId.length > 0) {
+        const response = await axios.get(process.env.NEXT_PUBLIC_API_RATIO + `/donation/${orderId}/status`, {})
+        console.log(response.data);
+        setDonateStatus(response.data.data.status);
+        if (response.data.data.status === "SUCCESS") {
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error("Error checking status:", error);
+    }
+  }
+
   const isOwner = userId === post?.data.user.id;
+
+  if (loading) {
+    return (
+      <>
+        <div className="flex justify-between pt-20 px-10">
+          <Sidebar />
+          <div className="overflow-scroll scrollbar-thin scrollbar-thumb-neutral-300 w-full overflow-x-hidden p-2 md:p-5 bg-white h-[calc(100vh-110px)] rounded-lg">
+            <p>Loading..</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -154,6 +195,12 @@ export default function DetailPost({ params }: { params: { postId: string } }) {
                     isInvalidInput={isInvalidInput}
                     inputValue={inputValue}
                     formatNumber={formatNumber}
+                  />
+                  <DonateStatusModal
+                    handleCheckStatus={handleCheckStatus}
+                    isStatusOpen={statusmodal}
+                    status={donatestatus}
+                    onClose={() => setStatusModal(false)}
                   />
                 </>
               )}
